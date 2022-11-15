@@ -1,6 +1,9 @@
 package cn.zhuyee;
 
+import cn.zhuyee.bean.TableInfo;
 import cn.zhuyee.builder.BuildTable;
+
+import java.util.List;
 
 /**
  * <h2>启动类</h2>
@@ -10,6 +13,6 @@ import cn.zhuyee.builder.BuildTable;
  */
 public class RunApplication {
   public static void main(String[] args) {
-    BuildTable.getTables();
+    List<TableInfo> tableInfoList = BuildTable.getTables();
   }
 }

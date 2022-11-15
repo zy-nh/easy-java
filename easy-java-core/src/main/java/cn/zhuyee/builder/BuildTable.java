@@ -30,6 +30,8 @@ public class BuildTable {
   private static final String SQL_SHOW_TABLE_STATUS = "show table status";
   // 拿到表字段信息
   private static final String SQL_SHOW_TABLE_FIELDS = "show full fields from %s";
+  // 拿到表索引信息
+  private static final String SQL_SHOW_TABLE_INDEX = "show index from %s";
 
   // 初始化类时获取数据库连接
   static {
@@ -47,8 +49,10 @@ public class BuildTable {
 
   /**
    * 读取表信息：表名和表描述
+   *
+   * @return 表信息
    */
-  public static void getTables() {
+  public static List<TableInfo> getTables() {
     PreparedStatement ps = null;
     ResultSet tableResult = null;
     List<TableInfo> tableInfoList = new ArrayList();
@@ -72,9 +76,10 @@ public class BuildTable {
         tableInfo.setBeanName(beanName);
         tableInfo.setComment(tableComment);
         tableInfo.setBeanParamName(beanName + Constants.PARAM_BEAN_SUFFIX);
-        List<FieldInfo> fieldInfoList = readFieldInfo(tableInfo);
-        logger.info("表:{}", JsonUtils.convertObj2Json(tableInfo));
-        logger.info("字段:{}", JsonUtils.convertObj2Json(fieldInfoList));
+        readFieldInfo(tableInfo);
+        getKeyIndexInfo(tableInfo);
+        logger.info("表信息:{}", JsonUtils.convertObj2Json(tableInfo));
+        //logger.info("字段:{}", JsonUtils.convertObj2Json(fieldInfoList));
       }
     } catch (Exception e) {
       logger.error("读取表失败",e);
@@ -101,15 +106,15 @@ public class BuildTable {
         }
       }
     }
+    return tableInfoList;
   }
 
   /**
-   * 读取表字段信息
+   * 读取表字段信息，并将表字段信息集合塞进表对象中
    *
    * @param tableInfo 表
-   * @return 表字段集合
    */
-  private static List<FieldInfo> readFieldInfo(TableInfo tableInfo) {
+  private static void readFieldInfo(TableInfo tableInfo) {
     PreparedStatement ps = null;
     ResultSet fieldResult = null;
 
@@ -143,16 +148,84 @@ public class BuildTable {
         fieldInfo.setComment(comment);
 
         // 判断是否有日期时间类型：有就设置为true，否则else
-        tableInfo.setHaveDateTime(ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, type));
+        //tableInfo.setHaveDateTime(ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, type));
         // 判断是否有时间类型：有就设置为true，否则else
-        tableInfo.setHaveDate(ArrayUtils.contains(Constants.SQL_DATE_TYPES, type));
+        //tableInfo.setHaveDate(ArrayUtils.contains(Constants.SQL_DATE_TYPES, type));
         // 判断是否有BigDecimal类型：有就设置为true，否则else
-        tableInfo.setHaveBigDecimal(ArrayUtils.contains(Constants.SQL_DECIMAL_TYPES, type));
+        //tableInfo.setHaveBigDecimal(ArrayUtils.contains(Constants.SQL_DECIMAL_TYPES, type));
+
+        // 判断是否有日期时间类型
+        if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, type)) {
+          tableInfo.setHaveDateTime(true);
+        }
+        // 判断是否有时间类型
+        if (ArrayUtils.contains(Constants.SQL_DATE_TYPES, type)) {
+          tableInfo.setHaveDate(true);
+        }
+        // 判断是否有BigDecimal类型
+        if (ArrayUtils.contains(Constants.SQL_DECIMAL_TYPES, type)) {
+          tableInfo.setHaveBigDecimal(true);
+        }
         fieldInfoList.add(fieldInfo);
-        //logger.info("字段:{},实体类属性：{},类型:{},Java类型：{},自增:{},备注:{}", field, propertyName, type, fieldInfo.getJavaType(), extra, comment);
+      }
+      // 将拿到的表字段信息塞进表对象中
+      tableInfo.setFieldList(fieldInfoList);
+
+    } catch (Exception e) {
+      logger.error("读取表字段失败",e);
+    } finally {
+      if (fieldResult != null) {
+        try {
+          fieldResult.close();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+      if (ps != null) {
+        try {
+          ps.close();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+
+  private static List<FieldInfo> getKeyIndexInfo(TableInfo tableInfo) {
+    PreparedStatement ps = null;
+    ResultSet fieldResult = null;
+
+    // 返回的字段集合
+    List<FieldInfo> fieldInfoList = new ArrayList();
+    try {
+      // 通过连接来调用执行器执行SQL，并返回结果
+      ps = conn.prepareStatement(String.format(SQL_SHOW_TABLE_INDEX, tableInfo.getTableName()));
+      fieldResult = ps.executeQuery();
+      while (fieldResult.next()) {
+        String keyName = fieldResult.getString("key_name");
+        // non_unique 值为0时，表示唯一索引
+        int nonUnique = fieldResult.getInt("non_unique");
+        String columnName = fieldResult.getString("column_name");
+
+        if (nonUnique == 1) {
+          continue;
+        }
+
+        // 拿到索引字段集合，可能为空
+        List<FieldInfo> keyFieldList = tableInfo.getKeyIndexMap().get(keyName);
+        // 读取表的索引字段，若为空，则新建一个，并put到map中
+        if (null == keyFieldList) {
+          keyFieldList = new ArrayList();
+          tableInfo.getKeyIndexMap().put(keyName,keyFieldList);
+        }
+        for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+          if (fieldInfo.getFieldName().equals(columnName)) {
+            keyFieldList.add(fieldInfo);
+          }
+        }
       }
     } catch (Exception e) {
-      logger.error("读取表失败",e);
+      logger.error("读取表索引失败",e);
     } finally {
       if (fieldResult != null) {
         try {
@@ -171,7 +244,6 @@ public class BuildTable {
     }
     return fieldInfoList;
   }
-
 
   /**
    * 字段驼峰处理
