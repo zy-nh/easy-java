@@ -1,9 +1,11 @@
 package cn.zhuyee.builder;
 
 import cn.zhuyee.bean.Constants;
+import cn.zhuyee.bean.FieldInfo;
 import cn.zhuyee.bean.TableInfo;
 import cn.zhuyee.utils.PropertiesUtils;
 import cn.zhuyee.utils.StrUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +25,10 @@ public class BuildTable {
   private static final Logger logger = LoggerFactory.getLogger(BuildTable.class);
   private static Connection conn = null;
 
-  // 拿到表及其注释
+  // 拿到表基本信息
   private static final String SQL_SHOW_TABLE_STATUS = "show table status";
+  // 拿到表字段信息
+  private static final String SQL_SHOW_TABLE_FIELDS = "show full fields from %s";
 
   // 初始化类时获取数据库连接
   static {
@@ -67,8 +71,8 @@ public class BuildTable {
         tableInfo.setBeanName(beanName);
         tableInfo.setComment(tableComment);
         tableInfo.setBeanParamName(beanName + Constants.PARAM_BEAN_SUFFIX);
-        logger.info("表:{},备注:{},JavaBean:{},JavaParamBean:{}", tableInfo.getTableName(), tableInfo.getComment(), tableInfo.getBeanName(), tableInfo.getBeanParamName());
-
+        //logger.info("表:{},备注:{},JavaBean:{},JavaParamBean:{}", tableInfo.getTableName(), tableInfo.getComment(), tableInfo.getBeanName(), tableInfo.getBeanParamName());
+        List<FieldInfo> fieldInfoList = readFieldInfo(tableInfo);
       }
     } catch (Exception e) {
       logger.error("读取表失败",e);
@@ -98,6 +102,80 @@ public class BuildTable {
   }
 
   /**
+   * 读取表字段信息
+   *
+   * @param tableInfo 表
+   * @return 表字段集合
+   */
+  private static List<FieldInfo> readFieldInfo(TableInfo tableInfo) {
+    PreparedStatement ps = null;
+    ResultSet fieldResult = null;
+
+    List<FieldInfo> fieldInfoList = new ArrayList();
+    try {
+      // 通过连接来调用执行器执行SQL，并返回结果
+      ps = conn.prepareStatement(String.format(SQL_SHOW_TABLE_FIELDS, tableInfo.getTableName()));
+      fieldResult = ps.executeQuery();
+      while (fieldResult.next()) {
+        String field = fieldResult.getString("field");
+        String type = fieldResult.getString("type");
+        String extra = fieldResult.getString("extra");
+        String comment = fieldResult.getString("comment");
+
+        // 类型去掉括号后面的，只保留前面单词
+        if (type.indexOf("(") > 0) {
+          // 用 ( 分割，取前面的
+          type = type.substring(0, type.indexOf("("));
+        }
+
+        // 字段名称小驼峰命名
+        String propertyName = camelField(field, false);
+
+        FieldInfo fieldInfo = new FieldInfo();
+        fieldInfo.setFieldName(field);
+        fieldInfo.setPropertyName(propertyName);
+        fieldInfo.setSqlType(type);
+        fieldInfo.setJavaType(processJavaType(type));
+        fieldInfo.setAutoIncrement("auto_increment".equalsIgnoreCase(extra));
+        fieldInfo.setComment(comment);
+
+        // 判断是否有日期时间类型
+        if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, type)) {
+          tableInfo.setHaveDateTime(true);
+        }
+        // 判断是否有时间类型
+        if (ArrayUtils.contains(Constants.SQL_DATE_TYPES, type)) {
+          tableInfo.setHaveDate(true);
+        }
+        // 判断是否有BigDecimal类型
+        if (ArrayUtils.contains(Constants.SQL_DECIMAL_TYPES, type)) {
+          tableInfo.setHaveBigDecimal(true);
+        }
+        logger.info("字段:{},实体类属性：{},类型:{},Java类型：{},自增:{},备注:{}", field, propertyName, type, fieldInfo.getJavaType(), extra, comment);
+      }
+    } catch (Exception e) {
+      logger.error("读取表失败",e);
+    } finally {
+      if (fieldResult != null) {
+        try {
+          fieldResult.close();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+      if (ps != null) {
+        try {
+          ps.close();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return fieldInfoList;
+  }
+
+
+  /**
    * 字段驼峰处理
    *
    * @param field 字段
@@ -114,5 +192,27 @@ public class BuildTable {
       stringBuffer.append(StrUtils.upperCaseFirstLetter(fields[i]));
     }
     return stringBuffer.toString();
+  }
+
+  /**
+   * SQL字段匹配Java类型
+   *
+   * @param type SQL字段类型
+   * @return 返回匹配的Java属性类型
+   */
+  private static String processJavaType(String type) {
+    if (ArrayUtils.contains(Constants.SQL_INTEGER_TYPES, type)) {
+      return "Integer";
+    } else if (ArrayUtils.contains(Constants.SQL_LONG_TYPES, type)) {
+      return "Long";
+    } else if (ArrayUtils.contains(Constants.SQL_STRING_TYPES, type)) {
+      return "String";
+    } else if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, type) || ArrayUtils.contains(Constants.SQL_DATE_TYPES, type)) {
+      return "Date";
+    } else if (ArrayUtils.contains(Constants.SQL_DECIMAL_TYPES, type)) {
+      return "BigDecimal";
+    } else {
+      throw new RuntimeException("无法识别的类型：" + type);
+    }
   }
 }

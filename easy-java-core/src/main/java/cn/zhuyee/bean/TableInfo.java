@@ -1,7 +1,5 @@
 package cn.zhuyee.bean;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
