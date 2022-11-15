@@ -3,6 +3,7 @@ package cn.zhuyee.builder;
 import cn.zhuyee.bean.Constants;
 import cn.zhuyee.bean.FieldInfo;
 import cn.zhuyee.bean.TableInfo;
+import cn.zhuyee.utils.JsonUtils;
 import cn.zhuyee.utils.PropertiesUtils;
 import cn.zhuyee.utils.StrUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -71,8 +72,9 @@ public class BuildTable {
         tableInfo.setBeanName(beanName);
         tableInfo.setComment(tableComment);
         tableInfo.setBeanParamName(beanName + Constants.PARAM_BEAN_SUFFIX);
-        //logger.info("表:{},备注:{},JavaBean:{},JavaParamBean:{}", tableInfo.getTableName(), tableInfo.getComment(), tableInfo.getBeanName(), tableInfo.getBeanParamName());
         List<FieldInfo> fieldInfoList = readFieldInfo(tableInfo);
+        logger.info("表:{}", JsonUtils.convertObj2Json(tableInfo));
+        logger.info("字段:{}", JsonUtils.convertObj2Json(fieldInfoList));
       }
     } catch (Exception e) {
       logger.error("读取表失败",e);
@@ -111,6 +113,7 @@ public class BuildTable {
     PreparedStatement ps = null;
     ResultSet fieldResult = null;
 
+    // 返回的字段集合
     List<FieldInfo> fieldInfoList = new ArrayList();
     try {
       // 通过连接来调用执行器执行SQL，并返回结果
@@ -139,19 +142,14 @@ public class BuildTable {
         fieldInfo.setAutoIncrement("auto_increment".equalsIgnoreCase(extra));
         fieldInfo.setComment(comment);
 
-        // 判断是否有日期时间类型
-        if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, type)) {
-          tableInfo.setHaveDateTime(true);
-        }
-        // 判断是否有时间类型
-        if (ArrayUtils.contains(Constants.SQL_DATE_TYPES, type)) {
-          tableInfo.setHaveDate(true);
-        }
-        // 判断是否有BigDecimal类型
-        if (ArrayUtils.contains(Constants.SQL_DECIMAL_TYPES, type)) {
-          tableInfo.setHaveBigDecimal(true);
-        }
-        logger.info("字段:{},实体类属性：{},类型:{},Java类型：{},自增:{},备注:{}", field, propertyName, type, fieldInfo.getJavaType(), extra, comment);
+        // 判断是否有日期时间类型：有就设置为true，否则else
+        tableInfo.setHaveDateTime(ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, type));
+        // 判断是否有时间类型：有就设置为true，否则else
+        tableInfo.setHaveDate(ArrayUtils.contains(Constants.SQL_DATE_TYPES, type));
+        // 判断是否有BigDecimal类型：有就设置为true，否则else
+        tableInfo.setHaveBigDecimal(ArrayUtils.contains(Constants.SQL_DECIMAL_TYPES, type));
+        fieldInfoList.add(fieldInfo);
+        //logger.info("字段:{},实体类属性：{},类型:{},Java类型：{},自增:{},备注:{}", field, propertyName, type, fieldInfo.getJavaType(), extra, comment);
       }
     } catch (Exception e) {
       logger.error("读取表失败",e);
