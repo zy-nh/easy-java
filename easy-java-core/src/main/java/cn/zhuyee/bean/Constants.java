@@ -18,6 +18,7 @@ public class Constants {
     PARAM_BEAN_SUFFIX = PropertiesUtils.getString("param.bean.suffix");
   }
 
+  // start ==> MySQL数据库关键字归类
   // 日期时间类型
   public final static String[] SQL_DATE_TIME_TYPES = new String[]{"datetime", "timestamp"};
   // 日期类型
@@ -30,6 +31,6 @@ public class Constants {
   public final static String[] SQL_INTEGER_TYPES = new String[]{"int", "tinyint"};
   // Long
   public final static String[] SQL_LONG_TYPES = new String[]{"bigint"};
-
+  // end ==> MySQL数据库关键字归类
 }
 
