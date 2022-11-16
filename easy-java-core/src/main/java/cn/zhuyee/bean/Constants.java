@@ -13,9 +13,41 @@ public class Constants {
   public static Boolean IGNORE_TABLE_PREFIX;
   // 参数 bean 后缀
   public static String PARAM_BEAN_SUFFIX;
+
+  /** 输出文件的基础路径（绝对） */
+  public static String PATH_BASE;
+  // java 代码路径
+  public static String PATH_JAVA = "java";
+  // resources 资源路径
+  public static String PATH_RESOURCES = "resources";
+
+  /** 基础包路径（目录） */
+  public static String PACKAGE_BASE;
+  /** 包路径的绝对路径 */
+  public static String PACKAGE_ABSOLUTE_PATH;
+
+  /** PO实体的包路径（相对目录）=基础包路径+PO实体包 */
+  public static String PACKAGE_ENTITY_PO;
+  /** PO实体的绝对包路径 */
+  public static String PO_ABSOLUTE_PATH;
+
+  // 查询实体的包名
+  public static String PACAAGE_ENTITY_PARAM;
+
   static{
     IGNORE_TABLE_PREFIX = Boolean.valueOf(PropertiesUtils.getString("ignore.table.prefix"));
     PARAM_BEAN_SUFFIX = PropertiesUtils.getString("param.bean.suffix");
+
+    // 文件
+    PATH_BASE = PropertiesUtils.getString("path.base");
+
+    // 包
+    PACKAGE_BASE = PropertiesUtils.getString("package.base");
+    PACKAGE_ABSOLUTE_PATH = PATH_BASE + PATH_JAVA + "/" + PACKAGE_BASE.replace(".", "/");
+
+    // PO
+    PACKAGE_ENTITY_PO = PACKAGE_BASE + "." + PropertiesUtils.getString("package.entity.po");
+    PO_ABSOLUTE_PATH = PACKAGE_ABSOLUTE_PATH + "/" + PropertiesUtils.getString("package.entity.po").replace(".", "/");
   }
 
   // start ==> MySQL数据库关键字归类

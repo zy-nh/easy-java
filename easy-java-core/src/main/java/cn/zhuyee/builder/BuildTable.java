@@ -3,7 +3,6 @@ package cn.zhuyee.builder;
 import cn.zhuyee.bean.Constants;
 import cn.zhuyee.bean.FieldInfo;
 import cn.zhuyee.bean.TableInfo;
-import cn.zhuyee.utils.JsonUtils;
 import cn.zhuyee.utils.PropertiesUtils;
 import cn.zhuyee.utils.StrUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -12,7 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -78,8 +79,9 @@ public class BuildTable {
         tableInfo.setBeanParamName(beanName + Constants.PARAM_BEAN_SUFFIX);
         readFieldInfo(tableInfo);
         getKeyIndexInfo(tableInfo);
-        logger.info("表信息:{}", JsonUtils.convertObj2Json(tableInfo));
+        //logger.info("表信息:{}", JsonUtils.convertObj2Json(tableInfo));
         //logger.info("字段:{}", JsonUtils.convertObj2Json(fieldInfoList));
+        tableInfoList.add(tableInfo);
       }
     } catch (Exception e) {
       logger.error("读取表失败",e);
@@ -198,6 +200,12 @@ public class BuildTable {
     // 返回的字段集合
     List<FieldInfo> fieldInfoList = new ArrayList();
     try {
+      // 缓存map
+      Map<String, FieldInfo> tempMap = new HashMap();
+      // 循环一次，将字段名作为key，字段对象作为值进行存储，下面取到索引后，通过字段来取对应的字段对象
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        tempMap.put(fieldInfo.getFieldName(), fieldInfo);
+      }
       // 通过连接来调用执行器执行SQL，并返回结果
       ps = conn.prepareStatement(String.format(SQL_SHOW_TABLE_INDEX, tableInfo.getTableName()));
       fieldResult = ps.executeQuery();
@@ -218,11 +226,13 @@ public class BuildTable {
           keyFieldList = new ArrayList();
           tableInfo.getKeyIndexMap().put(keyName,keyFieldList);
         }
-        for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        /*for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
           if (fieldInfo.getFieldName().equals(columnName)) {
             keyFieldList.add(fieldInfo);
           }
-        }
+        }*/
+        // [优化] 这样来取到索引字段后，通过缓存Map来取到对应的字段对象进行add到list中，减少循环
+        keyFieldList.add(tempMap.get(columnName));
       }
     } catch (Exception e) {
       logger.error("读取表索引失败",e);
