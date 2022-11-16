@@ -5,8 +5,7 @@ import cn.zhuyee.bean.TableInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * <h2>创建JavaBean对象</h2>
@@ -31,13 +30,62 @@ public class BuildPO {
       folder.mkdirs();
     }
 
-    // 先生成这个java实体类
-    File file = new File(folder, tableInfo.getBeanName() + ".java");
+    // 生成这个java实体类
+    File poFile = new File(folder, tableInfo.getBeanName() + ".java");
+
+    // 通过输出流向文件中写入数据
+    OutputStream outputStream = null;
+    OutputStreamWriter outputStreamWriter = null;
+    BufferedWriter bufferedWriter = null;
     try {
-      file.createNewFile();
-    } catch (IOException e) {
-      e.printStackTrace();
+      outputStream = new FileOutputStream(poFile);
+      outputStreamWriter = new OutputStreamWriter(outputStream, "utf8");
+      bufferedWriter = new BufferedWriter(outputStreamWriter);
+
+      // 开始创建文件
+      // 1.写入包路径
+      bufferedWriter.write("package " + Constants.PACKAGE_ENTITY_PO + ";");
+      bufferedWriter.newLine();
+      bufferedWriter.newLine();
+
+      // 2.写入导包信息
+      bufferedWriter.write("import java.io.Serializable;");
+      bufferedWriter.newLine();
+      bufferedWriter.newLine();
+
+      // 3.类定义信息
+      bufferedWriter.write("public class " + tableInfo.getBeanName() + " implements Serializable {");
+      bufferedWriter.newLine();
+      bufferedWriter.write("}");
+
+      bufferedWriter.flush();
+
+    } catch (Exception e) {
+      logger.error("==> 创建PO失败！", e);
+    } finally {
+      if (bufferedWriter != null) {
+        try {
+          bufferedWriter.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+      if (outputStreamWriter != null) {
+        try {
+          outputStreamWriter.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+      if (outputStream != null) {
+        try {
+          outputStream.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
     }
+
     logger.info("==>结束创建文件");
   }
 }
