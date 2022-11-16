@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <h2>创建JavaBean对象</h2>
@@ -34,14 +35,12 @@ public class BuildPO {
     File poFile = new File(folder, tableInfo.getBeanName() + ".java");
 
     // 通过输出流向文件中写入数据
-    OutputStream outputStream = null;
-    OutputStreamWriter outputStreamWriter = null;
-    BufferedWriter bufferedWriter = null;
-    try {
-      outputStream = new FileOutputStream(poFile);
-      outputStreamWriter = new OutputStreamWriter(outputStream, "utf8");
-      bufferedWriter = new BufferedWriter(outputStreamWriter);
-
+    // [优化] ==> 通过 try-with-resources 方式关闭资源
+    try (
+        OutputStream outputStream = new FileOutputStream(poFile);
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter)
+    ) {
       // 开始创建文件
       // 1.写入包路径
       bufferedWriter.write("package " + Constants.PACKAGE_ENTITY_PO + ";");
@@ -59,31 +58,8 @@ public class BuildPO {
       bufferedWriter.write("}");
 
       bufferedWriter.flush();
-
     } catch (Exception e) {
       logger.error("==> 创建PO失败！", e);
-    } finally {
-      if (bufferedWriter != null) {
-        try {
-          bufferedWriter.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-      if (outputStreamWriter != null) {
-        try {
-          outputStreamWriter.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-      if (outputStream != null) {
-        try {
-          outputStream.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
     }
 
     logger.info("==>结束创建文件");
