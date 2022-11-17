@@ -1,6 +1,7 @@
 package cn.zhuyee.builder;
 
 import cn.zhuyee.bean.Constants;
+import cn.zhuyee.bean.FieldInfo;
 import cn.zhuyee.bean.TableInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,11 +51,32 @@ public class BuildPO {
       // 2.写入导包信息
       bufferedWriter.write("import java.io.Serializable;");
       bufferedWriter.newLine();
+      // 有日期、时间类型就导包
+      if (tableInfo.getHaveDateTime() || tableInfo.getHaveDate()) {
+        bufferedWriter.write("import java.util.Date;");
+        bufferedWriter.newLine();
+      }
+      // 有BigDecimal类型就导包
+      if (tableInfo.getHaveBigDecimal()) {
+        bufferedWriter.write("import java.math.BigDecimal;");
+        bufferedWriter.newLine();
+      }
       bufferedWriter.newLine();
+
+      // 创建类的注释
+      BuildComment.createClassComment(bufferedWriter, tableInfo.getComment());
 
       // 3.类定义信息
       bufferedWriter.write("public class " + tableInfo.getBeanName() + " implements Serializable {");
       bufferedWriter.newLine();
+
+      // 4.拿到所有的属性
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        bufferedWriter.write("\tprivate " + fieldInfo.getJavaType() + " " + fieldInfo.getFieldName() + ";");
+        bufferedWriter.newLine();
+        bufferedWriter.newLine();
+      }
+
       bufferedWriter.write("}");
 
       bufferedWriter.flush();
