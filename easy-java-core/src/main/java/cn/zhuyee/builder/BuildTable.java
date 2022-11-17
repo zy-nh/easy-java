@@ -126,6 +126,12 @@ public class BuildTable {
       // 通过连接来调用执行器执行SQL，并返回结果
       ps = conn.prepareStatement(String.format(SQL_SHOW_TABLE_FIELDS, tableInfo.getTableName()));
       fieldResult = ps.executeQuery();
+
+      // tableInfo中那几个Boolean类型的值默认为FALSE
+      Boolean haveDateTime = false;
+      Boolean haveDate = false;
+      Boolean haveBigDecimal = false;
+
       while (fieldResult.next()) {
         String field = fieldResult.getString("field");
         String type = fieldResult.getString("type");
@@ -149,27 +155,25 @@ public class BuildTable {
         fieldInfo.setAutoIncrement("auto_increment".equalsIgnoreCase(extra));
         fieldInfo.setComment(comment);
 
-        // 判断是否有日期时间类型：有就设置为true，否则else
-        //tableInfo.setHaveDateTime(ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, type));
-        // 判断是否有时间类型：有就设置为true，否则else
-        //tableInfo.setHaveDate(ArrayUtils.contains(Constants.SQL_DATE_TYPES, type));
-        // 判断是否有BigDecimal类型：有就设置为true，否则else
-        //tableInfo.setHaveBigDecimal(ArrayUtils.contains(Constants.SQL_DECIMAL_TYPES, type));
-
         // 判断是否有日期时间类型
         if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, type)) {
-          tableInfo.setHaveDateTime(true);
+          haveDateTime = true;
         }
         // 判断是否有时间类型
         if (ArrayUtils.contains(Constants.SQL_DATE_TYPES, type)) {
-          tableInfo.setHaveDate(true);
+          haveDate = true;
         }
         // 判断是否有BigDecimal类型
         if (ArrayUtils.contains(Constants.SQL_DECIMAL_TYPES, type)) {
-          tableInfo.setHaveBigDecimal(true);
+          haveBigDecimal = true;
         }
         fieldInfoList.add(fieldInfo);
       }
+      // 设置这几个布尔类型的值
+      tableInfo.setHaveDateTime(haveDateTime);
+      tableInfo.setHaveDate(haveDate);
+      tableInfo.setHaveBigDecimal(haveBigDecimal);
+
       // 将拿到的表字段信息塞进表对象中
       tableInfo.setFieldList(fieldInfoList);
 

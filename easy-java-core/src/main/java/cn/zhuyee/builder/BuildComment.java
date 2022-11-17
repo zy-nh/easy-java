@@ -24,6 +24,8 @@ public class BuildComment {
     bw.newLine();
     bw.write(" * @Description: " + classComment);
     bw.newLine();
+    bw.write(" *");
+    bw.newLine();
     bw.write(" * @Date: "+new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
     bw.newLine();
     bw.write(" */");
