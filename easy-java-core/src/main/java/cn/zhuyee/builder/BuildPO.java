@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
+import static cn.zhuyee.builder.BuildComment.createFieldComment;
+
 /**
  * <h2>创建JavaBean对象</h2>
  *
@@ -69,9 +71,11 @@ public class BuildPO {
       // 3.类定义信息
       bufferedWriter.write("public class " + tableInfo.getBeanName() + " implements Serializable {");
       bufferedWriter.newLine();
+      bufferedWriter.newLine();
 
       // 4.拿到所有的属性
       for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        createFieldComment(bufferedWriter, fieldInfo.getComment());
         bufferedWriter.write("\tprivate " + fieldInfo.getJavaType() + " " + fieldInfo.getFieldName() + ";");
         bufferedWriter.newLine();
         bufferedWriter.newLine();

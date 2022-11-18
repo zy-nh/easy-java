@@ -1,5 +1,7 @@
 package cn.zhuyee.builder;
 
+import cn.zhuyee.bean.Constants;
+
 import java.io.BufferedWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,9 +17,9 @@ public class BuildComment {
   /**
    * 创建类上的注释
    *
-   * @param bw
-   * @param classComment
-   * @throws Exception
+   * @param bw 字符缓冲输出流
+   * @param classComment 表备注
+   * @throws Exception 异常
    */
   public static void createClassComment(BufferedWriter bw,String classComment) throws Exception {
     bw.write("/**");
@@ -26,14 +28,28 @@ public class BuildComment {
     bw.newLine();
     bw.write(" *");
     bw.newLine();
+    bw.write(" * @Author: " + Constants.AUTHOR_COMMENT);
+    bw.newLine();
     bw.write(" * @Date: "+new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
     bw.newLine();
     bw.write(" */");
     bw.newLine();
   }
 
-  public static void createFieldComment() {
-
+  /**
+   * 创建属性注释
+   *
+   * @param bw 字符缓冲输出流
+   * @param fieldComment 字段备注
+   * @throws Exception 异常
+   */
+  public static void createFieldComment(BufferedWriter bw,String fieldComment) throws Exception {
+    bw.write("\t/**");
+    bw.newLine();
+    bw.write("\t * " + (fieldComment == null ? "" : fieldComment));
+    bw.newLine();
+    bw.write("\t */");
+    bw.newLine();
   }
 
   public static void createMethodComment() {

@@ -1,6 +1,8 @@
 package cn.zhuyee.utils;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -22,9 +24,9 @@ public class PropertiesUtils {
   static {
     InputStream is = null;
     try {
-      // 读取配置文件
+      // 读取配置文件：load的时候用输入流包装一下，并指定编码格式
       is = PropertiesUtils.class.getClassLoader().getResourceAsStream("application.properties");
-      props.load(is);
+      props.load(new InputStreamReader(is, StandardCharsets.UTF_8));
 
       // 定义一个迭代器，用来遍历并塞值到map中
       Iterator<Object> iterator = props.keySet().iterator();

@@ -9,6 +9,8 @@ import cn.zhuyee.utils.PropertiesUtils;
  * Created by zhuye at 2022/11/14 21:58.
  */
 public class Constants {
+  // 作者名称
+  public static String AUTHOR_COMMENT;
   // 是否忽略表前缀
   public static Boolean IGNORE_TABLE_PREFIX;
   // 参数 bean 后缀
@@ -35,6 +37,8 @@ public class Constants {
   public static String PACAAGE_ENTITY_PARAM;
 
   static{
+    AUTHOR_COMMENT = PropertiesUtils.getString("author.comment");
+
     IGNORE_TABLE_PREFIX = Boolean.valueOf(PropertiesUtils.getString("ignore.table.prefix"));
     PARAM_BEAN_SUFFIX = PropertiesUtils.getString("param.bean.suffix");
 
