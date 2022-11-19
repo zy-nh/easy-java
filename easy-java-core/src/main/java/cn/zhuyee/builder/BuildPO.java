@@ -4,6 +4,7 @@ import cn.zhuyee.bean.Constants;
 import cn.zhuyee.bean.FieldInfo;
 import cn.zhuyee.bean.TableInfo;
 import cn.zhuyee.utils.DateUtils;
+import cn.zhuyee.utils.StrUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,7 @@ public class BuildPO {
         bufferedWriter.newLine();
       }
       // 给忽略属性的注解导包
-      Boolean haveIgnoreBean = false;
+      boolean haveIgnoreBean = false;
       for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
         if (ArrayUtils.contains(Constants.IGNORE_BEAN_2JSON_FIELD.split(","), fieldInfo.getPropertyName())) {
           haveIgnoreBean = true;
@@ -115,9 +116,33 @@ public class BuildPO {
           bufferedWriter.newLine();
         }
 
-        bufferedWriter.write("\tprivate " + fieldInfo.getJavaType() + " " + fieldInfo.getFieldName() + ";");
+        bufferedWriter.write("\tprivate " + fieldInfo.getJavaType() + " " + fieldInfo.getPropertyName() + ";");
         bufferedWriter.newLine();
         bufferedWriter.newLine();
+      }
+
+      // 5.给属性生成getter|setter方法
+      for (FieldInfo field : tableInfo.getFieldList()) {
+        // 将属性首字母大写
+        String tempField = StrUtils.upperCaseFirstLetter(field.getPropertyName());
+
+        // start ==> getter
+        bufferedWriter.write("\tpublic " + field.getJavaType() + " get" + tempField + "() {");
+        bufferedWriter.newLine();
+        bufferedWriter.write("\t\treturn this." + field.getPropertyName() + ";");
+        bufferedWriter.newLine();
+        bufferedWriter.write("\t}");
+        bufferedWriter.newLine();
+        // end ==> getter
+
+        // start ==> setter
+        bufferedWriter.write("\tpublic void set" + tempField + "(" + field.getJavaType() + " " + field.getPropertyName() + ") {");
+        bufferedWriter.newLine();
+        bufferedWriter.write("\t\tthis." + field.getPropertyName() + " = " + field.getPropertyName() + ";");
+        bufferedWriter.newLine();
+        bufferedWriter.write("\t}");
+        bufferedWriter.newLine();
+        // end ==> setter
       }
 
       bufferedWriter.write("}");
