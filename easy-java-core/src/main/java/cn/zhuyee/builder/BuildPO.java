@@ -3,6 +3,8 @@ package cn.zhuyee.builder;
 import cn.zhuyee.bean.Constants;
 import cn.zhuyee.bean.FieldInfo;
 import cn.zhuyee.bean.TableInfo;
+import cn.zhuyee.utils.DateUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +59,10 @@ public class BuildPO {
       if (tableInfo.getHaveDateTime() || tableInfo.getHaveDate()) {
         bufferedWriter.write("import java.util.Date;");
         bufferedWriter.newLine();
+        bufferedWriter.write(Constants.BEAN_DATE_FORMAT_CLASS);
+        bufferedWriter.newLine();
+        bufferedWriter.write(Constants.BEAN_DATE_UNFORMAT_CLASS);
+        bufferedWriter.newLine();
       }
       // 有BigDecimal类型就导包
       if (tableInfo.getHaveBigDecimal()) {
@@ -76,6 +82,23 @@ public class BuildPO {
       // 4.拿到所有的属性
       for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
         createFieldComment(bufferedWriter, fieldInfo.getComment());
+        // 日期时间类型
+        if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, fieldInfo.getSqlType())) {
+          bufferedWriter.write("\t" + String.format(Constants.BEAN_DATE_FORMAT_EXPRESSION, DateUtils.YYYY_MM_DD_HH_MM_SS));
+          bufferedWriter.newLine();
+          // 反序列化
+          bufferedWriter.write("\t" + String.format(Constants.BEAN_DATE_UNFORMAT_EXPRESSION, DateUtils.YYYY_MM_DD_HH_MM_SS));
+          bufferedWriter.newLine();
+        }
+        // 日期类型
+        if (ArrayUtils.contains(Constants.SQL_DATE_TYPES, fieldInfo.getSqlType())) {
+          bufferedWriter.write("\t" + String.format(Constants.BEAN_DATE_FORMAT_EXPRESSION, DateUtils.YYYY_MM_DD));
+          bufferedWriter.newLine();
+          // 反序列化
+          bufferedWriter.write("\t" + String.format(Constants.BEAN_DATE_UNFORMAT_EXPRESSION, DateUtils.YYYY_MM_DD));
+          bufferedWriter.newLine();
+        }
+
         bufferedWriter.write("\tprivate " + fieldInfo.getJavaType() + " " + fieldInfo.getFieldName() + ";");
         bufferedWriter.newLine();
         bufferedWriter.newLine();

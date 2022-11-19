@@ -11,6 +11,19 @@ import cn.zhuyee.utils.PropertiesUtils;
 public class Constants {
   // 作者名称
   public static String AUTHOR_COMMENT;
+
+  // 需要忽略的属性
+  public static String IGNORE_BEAN_2JSON_FIELD;
+  public static String ignore_bean_2json_expression;
+  public static String IGNORE_BEAN_2JSON_CLASS;
+
+  // 日期时间序列化、反序列化
+  public static String BEAN_DATE_FORMAT_EXPRESSION;
+  public static String BEAN_DATE_FORMAT_CLASS;
+
+  public static String BEAN_DATE_UNFORMAT_EXPRESSION;
+  public static String BEAN_DATE_UNFORMAT_CLASS;
+
   // 是否忽略表前缀
   public static Boolean IGNORE_TABLE_PREFIX;
   // 参数 bean 后缀
@@ -39,6 +52,19 @@ public class Constants {
   static{
     AUTHOR_COMMENT = PropertiesUtils.getString("author.comment");
 
+    // 需要忽略的属性
+    IGNORE_BEAN_2JSON_FIELD = PropertiesUtils.getString("ignore.bean.2json.field");
+    ignore_bean_2json_expression = PropertiesUtils.getString("ignore.bean.2json.expression");
+    IGNORE_BEAN_2JSON_CLASS = PropertiesUtils.getString("ignore.bean.2json.class");
+
+    // 日期时间序列化、反序列化
+    BEAN_DATE_FORMAT_EXPRESSION = PropertiesUtils.getString("bean.date.format.expression");
+    BEAN_DATE_FORMAT_CLASS = PropertiesUtils.getString("bean.date.format.class");
+
+    BEAN_DATE_UNFORMAT_EXPRESSION = PropertiesUtils.getString("bean.date.unformat.expression");
+    BEAN_DATE_UNFORMAT_CLASS = PropertiesUtils.getString("bean.date.unformat.class");
+
+    // 是否忽略表前缀
     IGNORE_TABLE_PREFIX = Boolean.valueOf(PropertiesUtils.getString("ignore.table.prefix"));
     PARAM_BEAN_SUFFIX = PropertiesUtils.getString("param.bean.suffix");
 
