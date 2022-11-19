@@ -69,6 +69,17 @@ public class BuildPO {
         bufferedWriter.write("import java.math.BigDecimal;");
         bufferedWriter.newLine();
       }
+      // 给忽略属性的注解导包
+      Boolean haveIgnoreBean = false;
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        if (ArrayUtils.contains(Constants.IGNORE_BEAN_2JSON_FIELD.split(","), fieldInfo.getPropertyName())) {
+          haveIgnoreBean = true;
+        }
+      }
+      if (haveIgnoreBean) {
+        bufferedWriter.write(Constants.IGNORE_BEAN_2JSON_CLASS);
+        bufferedWriter.newLine();
+      }
       bufferedWriter.newLine();
 
       // 创建类的注释
@@ -82,6 +93,11 @@ public class BuildPO {
       // 4.拿到所有的属性
       for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
         createFieldComment(bufferedWriter, fieldInfo.getComment());
+        // 要忽略的属性
+        if (ArrayUtils.contains(Constants.IGNORE_BEAN_2JSON_FIELD.split(","), fieldInfo.getPropertyName())) {
+          bufferedWriter.write("\t" + String.format(Constants.IGNORE_BEAN_2JSON_EXPRESSION, DateUtils.YYYY_MM_DD_HH_MM_SS));
+          bufferedWriter.newLine();
+        }
         // 日期时间类型
         if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, fieldInfo.getSqlType())) {
           bufferedWriter.write("\t" + String.format(Constants.BEAN_DATE_FORMAT_EXPRESSION, DateUtils.YYYY_MM_DD_HH_MM_SS));
