@@ -65,6 +65,11 @@ public class BuildPO {
         bufferedWriter.newLine();
         bufferedWriter.write(Constants.BEAN_DATE_UNFORMAT_CLASS);
         bufferedWriter.newLine();
+
+        bufferedWriter.write("import " + Constants.PACKAGE_UTILS + ".DateUtils;");
+        bufferedWriter.newLine();
+        bufferedWriter.write("import " + Constants.PACKAGE_ENUMS + ".DateTimePatternEnum;");
+        bufferedWriter.newLine();
       }
       // 有BigDecimal类型就导包
       if (tableInfo.getHaveBigDecimal()) {
@@ -154,7 +159,15 @@ public class BuildPO {
           toString.append("\"");
         }
         index++;
-        toString.append(field.getComment() + " : \" + (" + field.getPropertyName() + " == null ? \"空\" : " + field.getPropertyName() + ")");
+        // 处理日期、时间类型
+        String propertyName = field.getPropertyName();
+        if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, field.getSqlType())) {
+          propertyName = "DateUtils.format(" + propertyName + ", DateTimePatternEnum.YYYY_MM_DD_HH_MM_SS.getPattern())";
+        } else if (ArrayUtils.contains(Constants.SQL_DATE_TYPES, field.getSqlType())) {
+          propertyName = "DateUtils.format(" + propertyName + ", DateTimePatternEnum.YYYY_MM_DD.getPattern())";
+        }
+
+        toString.append(field.getComment() + " : \" + (" + field.getPropertyName() + " == null ? \"空\" : " + propertyName + ")");
         if (index < tableInfo.getFieldList().size()) {
           toString.append(" + ").append("\", ");
         }
