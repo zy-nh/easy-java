@@ -32,7 +32,13 @@ public class Constants {
   /** 是否忽略表前缀 */
   public static Boolean IGNORE_TABLE_PREFIX;
   /** 参数 bean 后缀 */
-  public static String PARAM_BEAN_SUFFIX;
+  public static String SUFFIX_BEAN_QUERY;
+  /** 查询参数-模糊搜索 */
+  public static String SUFFIX_BEAN_QUERY_FUZZY;
+  /** 查询参数-时间搜索开始 */
+  public static String SUFFIX_BEAN_QUERY_TIME_START;
+  /** 查询参数-时间搜索结束 */
+  public static String SUFFIX_BEAN_QUERY_TIME_END;
 
   /** 输出文件的基础路径（绝对） */
   public static String PATH_BASE;
@@ -57,7 +63,9 @@ public class Constants {
   public static String PO_ABSOLUTE_PATH;
 
   /** 查询实体的包名 */
-  public static String PACAAGE_ENTITY_PARAM;
+  public static String PACAAGE_ENTITY_QUERY;
+  /** 查询实体的包路径 */
+  public static String QUERY_ABSOLUTE_PATH;
 
   /** 工具类包 */
   public static String PACKAGE_UTILS;
@@ -86,7 +94,11 @@ public class Constants {
 
     // ==> 是否忽略表前缀
     IGNORE_TABLE_PREFIX = Boolean.valueOf(PropertiesUtils.getString("ignore.table.prefix"));
-    PARAM_BEAN_SUFFIX = PropertiesUtils.getString("param.bean.suffix");
+    SUFFIX_BEAN_QUERY = PropertiesUtils.getString("suffix.bean.query");
+    // 查询参数
+    SUFFIX_BEAN_QUERY_FUZZY = PropertiesUtils.getString("suffix.bean.query.fuzzy");
+    SUFFIX_BEAN_QUERY_TIME_START = PropertiesUtils.getString("suffix.bean.query.time.start");
+    SUFFIX_BEAN_QUERY_TIME_END = PropertiesUtils.getString("suffix.bean.query.time.end");
 
     // ==> 文件
     PATH_BASE = PropertiesUtils.getString("path.base");
@@ -101,7 +113,11 @@ public class Constants {
 
     // ==> PO
     PACKAGE_ENTITY_PO = PACKAGE_BASE + "." + PropertiesUtils.getString("package.entity.po");
-    PO_ABSOLUTE_PATH = PACKAGE_ABSOLUTE_PATH + "/" + PropertiesUtils.getString("package.entity.po").replace(".", "/");
+    PO_ABSOLUTE_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_ENTITY_PO.replace(".", "/");
+
+    // ==> QUERY
+    PACAAGE_ENTITY_QUERY = PACKAGE_BASE + "." + PropertiesUtils.getString("package.entity.query");
+    QUERY_ABSOLUTE_PATH = PATH_ABSOLUTE_JAVA + "/" + PACAAGE_ENTITY_QUERY.replace(".", "/");
 
     // ==> UTILS
     PACKAGE_UTILS = PACKAGE_BASE + "." + PropertiesUtils.getString("package.utils");

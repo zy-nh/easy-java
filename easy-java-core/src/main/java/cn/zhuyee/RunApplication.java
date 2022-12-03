@@ -3,6 +3,7 @@ package cn.zhuyee;
 import cn.zhuyee.bean.TableInfo;
 import cn.zhuyee.builder.BuildBase;
 import cn.zhuyee.builder.BuildPO;
+import cn.zhuyee.builder.BuildQuery;
 import cn.zhuyee.builder.BuildTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ public class RunApplication {
     BuildBase.execute(); // 生成工具包
     for (TableInfo tableInfo : tableInfoList) {
       BuildPO.execute(tableInfo);
+      BuildQuery.execute(tableInfo);
     }
   }
 }

@@ -76,7 +76,7 @@ public class BuildTable {
         tableInfo.setTableName(tableName);
         tableInfo.setBeanName(beanName);
         tableInfo.setComment(tableComment);
-        tableInfo.setBeanParamName(beanName + Constants.PARAM_BEAN_SUFFIX);
+        tableInfo.setBeanParamName(beanName + Constants.SUFFIX_BEAN_QUERY);
         readFieldInfo(tableInfo);
         getKeyIndexInfo(tableInfo);
         //logger.info("表信息:{}", JsonUtils.convertObj2Json(tableInfo));
