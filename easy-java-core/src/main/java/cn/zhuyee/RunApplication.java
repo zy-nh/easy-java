@@ -1,6 +1,7 @@
 package cn.zhuyee;
 
 import cn.zhuyee.bean.TableInfo;
+import cn.zhuyee.builder.BuildBase;
 import cn.zhuyee.builder.BuildPO;
 import cn.zhuyee.builder.BuildTable;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ public class RunApplication {
   public static void main(String[] args) {
     logger.info("==>开始执行");
     List<TableInfo> tableInfoList = BuildTable.getTables();
+    BuildBase.execute(); // 生成工具包
     for (TableInfo tableInfo : tableInfoList) {
       BuildPO.execute(tableInfo);
     }

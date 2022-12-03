@@ -1,0 +1,61 @@
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * <h2>日期时间工具类</h2>
+ */
+public class DateUtils {
+
+  private static final Object lockObj = new Object();
+  private static Map<String, ThreadLocal<SimpleDateFormat>> sdfMap = new HashMap<>();
+
+  private static SimpleDateFormat getSdf(final String pattern) {
+    ThreadLocal<SimpleDateFormat> t1 = sdfMap.get(pattern);
+    if (t1 == null) {
+      synchronized (lockObj) {
+        t1 = sdfMap.get(pattern);
+        if (t1 == null) {
+          // 可用 lambda 表达式，SimpleDateFormat不是线程安全的
+          t1 = new ThreadLocal<SimpleDateFormat>(){
+            @Override
+            protected SimpleDateFormat initialValue() {
+              return new SimpleDateFormat(pattern);
+            }
+          };
+          sdfMap.put(pattern, t1);
+        }
+      }
+    }
+    return t1.get();
+  }
+
+  /**
+   * 日期格式化
+   * @param date 日期
+   * @param pattern 格式
+   * @return 格式化后的字符串
+   */
+  public static String format(Date date, String pattern) {
+    return getSdf(pattern).format(date);
+  }
+
+  /**
+   * 字符串类型的日期转为指定格式的日期类型
+   *
+   * @param dateStr 字符串类型的日期
+   * @param pattern 格式
+   * @return 日期
+   */
+  public static Date parse(String dateStr, String pattern) {
+    try {
+      return getSdf(pattern).parse(dateStr);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+}

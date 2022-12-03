@@ -48,6 +48,7 @@ public class BuildPO {
         BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter)
     ) {
       // 开始创建文件
+      // start ==> 生成类文件
       // 1.写入包路径
       bufferedWriter.write("package " + Constants.PACKAGE_ENTITY_PO + ";");
       bufferedWriter.newLine();
@@ -145,7 +146,30 @@ public class BuildPO {
         // end ==> setter
       }
 
+      // 6.重写toString方法
+      StringBuffer toString = new StringBuffer();
+      int index = 0;
+      for (FieldInfo field : tableInfo.getFieldList()) {
+        if (index == 0) {
+          toString.append("\"");
+        }
+        index++;
+        toString.append(field.getComment() + " : \" + (" + field.getPropertyName() + " == null ? \"空\" : " + field.getPropertyName() + ")");
+        if (index < tableInfo.getFieldList().size()) {
+          toString.append(" + ").append("\", ");
+        }
+      }
+      bufferedWriter.write("\t@Override");
+      bufferedWriter.newLine();
+      bufferedWriter.write("\tpublic String toString() {");
+      bufferedWriter.newLine();
+      bufferedWriter.write("\t\treturn " + toString + ";");
+      bufferedWriter.newLine();
+      bufferedWriter.write("\t}");
+      bufferedWriter.newLine();
+
       bufferedWriter.write("}");
+      // end ==> 生成类文件
 
       bufferedWriter.flush();
     } catch (Exception e) {

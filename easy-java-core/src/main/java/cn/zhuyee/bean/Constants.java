@@ -36,10 +36,15 @@ public class Constants {
 
   /** 输出文件的基础路径（绝对） */
   public static String PATH_BASE;
-  // java 代码路径
+  // java 代码路径名
   public static String PATH_JAVA = "java";
+  /** java 包绝对路径 */
+  public static String PATH_ABSOLUTE_JAVA;
+
   // resources 资源路径
   public static String PATH_RESOURCES = "resources";
+  /** resources 资源绝对路径 */
+  public static String PATH_ABSOLUTE_RESOURCES;
 
   /** 基础包路径（目录） */
   public static String PACKAGE_BASE;
@@ -53,6 +58,16 @@ public class Constants {
 
   /** 查询实体的包名 */
   public static String PACAAGE_ENTITY_PARAM;
+
+  /** 工具类包 */
+  public static String PACKAGE_UTILS;
+  /** 工具类包路径 */
+  public static String PACKAGE_UTILS_PATH;
+
+  /** 枚举类包 */
+  public static String PACKAGE_ENUMS;
+  /** 枚举类包路径 */
+  public static String PACKAGE_ENUMS_PATH;
 
   static{
     AUTHOR_COMMENT = PropertiesUtils.getString("author.comment");
@@ -75,14 +90,26 @@ public class Constants {
 
     // ==> 文件
     PATH_BASE = PropertiesUtils.getString("path.base");
+    // ==> java 代码资源绝对路径
+    PATH_ABSOLUTE_JAVA = PATH_BASE + PATH_JAVA;
+    // ==> resources 资源绝对路径
+    PATH_ABSOLUTE_RESOURCES = PATH_BASE + PATH_RESOURCES;
 
     // ==> 包
     PACKAGE_BASE = PropertiesUtils.getString("package.base");
-    PACKAGE_ABSOLUTE_PATH = PATH_BASE + PATH_JAVA + "/" + PACKAGE_BASE.replace(".", "/");
+    PACKAGE_ABSOLUTE_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_BASE.replace(".", "/");
 
     // ==> PO
     PACKAGE_ENTITY_PO = PACKAGE_BASE + "." + PropertiesUtils.getString("package.entity.po");
     PO_ABSOLUTE_PATH = PACKAGE_ABSOLUTE_PATH + "/" + PropertiesUtils.getString("package.entity.po").replace(".", "/");
+
+    // ==> UTILS
+    PACKAGE_UTILS = PACKAGE_BASE + "." + PropertiesUtils.getString("package.utils");
+    PACKAGE_UTILS_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_UTILS.replace(".", "/");
+
+    // ==> ENUMS
+    PACKAGE_ENUMS = PACKAGE_BASE + "." + PropertiesUtils.getString("package.enums");
+    PACKAGE_ENUMS_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_ENUMS.replace(".", "/");
   }
 
   // start ==> MySQL数据库关键字归类
