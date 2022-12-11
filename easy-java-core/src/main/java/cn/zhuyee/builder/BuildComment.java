@@ -30,7 +30,7 @@ public class BuildComment {
     bw.newLine();
     bw.write(" * @Author: " + Constants.AUTHOR_COMMENT);
     bw.newLine();
-    bw.write(" * @Date: "+new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
+    bw.write(" * @Date: "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
     bw.newLine();
     bw.write(" */");
     bw.newLine();

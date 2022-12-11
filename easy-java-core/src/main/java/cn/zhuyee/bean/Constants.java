@@ -40,6 +40,9 @@ public class Constants {
   /** 查询参数-时间搜索结束 */
   public static String SUFFIX_BEAN_QUERY_TIME_END;
 
+  /** mapper后缀 */
+  public static String SUFFIX_BEAN_MAPPER;
+
   /** 输出文件的基础路径（绝对） */
   public static String PATH_BASE;
   // java 代码路径名
@@ -77,6 +80,11 @@ public class Constants {
   /** 枚举类包路径 */
   public static String PACKAGE_ENUMS_PATH;
 
+  /** mapper */
+  public static String PACKAGE_MAPPERS;
+  /** mapper包路径 */
+  public static String PACKAGE_MAPPERS_PATH;
+
   static{
     AUTHOR_COMMENT = PropertiesUtils.getString("author.comment");
 
@@ -99,6 +107,9 @@ public class Constants {
     SUFFIX_BEAN_QUERY_FUZZY = PropertiesUtils.getString("suffix.bean.query.fuzzy");
     SUFFIX_BEAN_QUERY_TIME_START = PropertiesUtils.getString("suffix.bean.query.time.start");
     SUFFIX_BEAN_QUERY_TIME_END = PropertiesUtils.getString("suffix.bean.query.time.end");
+
+    // mapper后缀
+    SUFFIX_BEAN_MAPPER = PropertiesUtils.getString("suffix.bean.mapper");
 
     // ==> 文件
     PATH_BASE = PropertiesUtils.getString("path.base");
@@ -126,6 +137,10 @@ public class Constants {
     // ==> ENUMS
     PACKAGE_ENUMS = PACKAGE_BASE + "." + PropertiesUtils.getString("package.enums");
     PACKAGE_ENUMS_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_ENUMS.replace(".", "/");
+
+    // ==> MAPPERS
+    PACKAGE_MAPPERS = PACKAGE_BASE + "." + PropertiesUtils.getString("package.mappers");
+    PACKAGE_MAPPERS_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_MAPPERS.replace(".", "/");
   }
 
   // start ==> MySQL数据库关键字归类

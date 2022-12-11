@@ -28,6 +28,10 @@ public class BuildBase {
     headerInfoList.add("package " + Constants.PACKAGE_UTILS);
     build(headerInfoList,"DateUtils", Constants.PACKAGE_UTILS_PATH);
 
+    // 生成BaseMapper
+    headerInfoList.clear();
+    headerInfoList.add("package " + Constants.PACKAGE_MAPPERS);
+    build(headerInfoList,"BaseMapper", Constants.PACKAGE_MAPPERS_PATH);
   }
 
   private static void build(List<String> headerInfoList, String fileName, String outputPath) {

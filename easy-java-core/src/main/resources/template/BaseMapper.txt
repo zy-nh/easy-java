@@ -1,0 +1,50 @@
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * <h2>基础操作</h2>
+ */
+public interface BaseMapper<T, P> {
+  /**
+   * insert: (插入)
+   * @param t 插入的实体
+   * @return
+   */
+  Integer insert(@Param("bean") T t);
+
+  /**
+   * insertOrUpdate: (插入或更新)
+   * @param t 插入或更新的实体
+   * @return
+   */
+  Integer insertOrUpdate(@Param("bean") T t);
+
+  /**
+   * insertBatch: (批量插入)
+   * @param list 插入的实体集合
+   * @return
+   */
+  Integer insertBatch(@Param("list") List<T> list);
+
+  /**
+   * insertOrUpdateBatch: (批量插入或更新)
+   * @param list 插入或更新的实体集合
+   * @return
+   */
+  Integer insertOrUpdateBatch(@Param("list") List<T> list);
+
+  /**
+   * selectList: (根据参数查询集合)
+   * @param p 参数实体
+   * @return
+   */
+  List<T> selectList(@Param("query") P p);
+
+  /**
+   * selectCount: (根据集合查询数量)
+   * @param p 参数实体
+   * @return
+   */
+  Integer selectCount(@Param("query") P p);
+}
