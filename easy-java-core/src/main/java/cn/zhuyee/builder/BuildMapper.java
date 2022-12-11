@@ -4,7 +4,6 @@ import cn.zhuyee.bean.Constants;
 import cn.zhuyee.bean.FieldInfo;
 import cn.zhuyee.bean.TableInfo;
 import cn.zhuyee.utils.StrUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
