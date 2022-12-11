@@ -66,7 +66,7 @@ public class Constants {
   public static String PO_ABSOLUTE_PATH;
 
   /** 查询实体的包名 */
-  public static String PACAAGE_ENTITY_QUERY;
+  public static String PACKAGE_ENTITY_QUERY;
   /** 查询实体的包路径 */
   public static String QUERY_ABSOLUTE_PATH;
 
@@ -84,6 +84,8 @@ public class Constants {
   public static String PACKAGE_MAPPERS;
   /** mapper包路径 */
   public static String PACKAGE_MAPPERS_PATH;
+  /** mapper-xml资源包路径 */
+  public static String PATH_MAPPERS_XMLS;
 
   static{
     AUTHOR_COMMENT = PropertiesUtils.getString("author.comment");
@@ -127,8 +129,8 @@ public class Constants {
     PO_ABSOLUTE_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_ENTITY_PO.replace(".", "/");
 
     // ==> QUERY
-    PACAAGE_ENTITY_QUERY = PACKAGE_BASE + "." + PropertiesUtils.getString("package.entity.query");
-    QUERY_ABSOLUTE_PATH = PATH_ABSOLUTE_JAVA + "/" + PACAAGE_ENTITY_QUERY.replace(".", "/");
+    PACKAGE_ENTITY_QUERY = PACKAGE_BASE + "." + PropertiesUtils.getString("package.entity.query");
+    QUERY_ABSOLUTE_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_ENTITY_QUERY.replace(".", "/");
 
     // ==> UTILS
     PACKAGE_UTILS = PACKAGE_BASE + "." + PropertiesUtils.getString("package.utils");
@@ -141,6 +143,7 @@ public class Constants {
     // ==> MAPPERS
     PACKAGE_MAPPERS = PACKAGE_BASE + "." + PropertiesUtils.getString("package.mappers");
     PACKAGE_MAPPERS_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_MAPPERS.replace(".", "/");
+    PATH_MAPPERS_XMLS = PATH_ABSOLUTE_RESOURCES + "/" + PACKAGE_MAPPERS.replace(".", "/");
   }
 
   // start ==> MySQL数据库关键字归类

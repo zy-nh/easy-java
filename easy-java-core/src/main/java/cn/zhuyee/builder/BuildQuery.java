@@ -52,7 +52,7 @@ public class BuildQuery {
       // 开始创建文件
       // start ==> 生成类文件
       // 1.写入包路径
-      bufferedWriter.write("package " + Constants.PACAAGE_ENTITY_QUERY + ";");
+      bufferedWriter.write("package " + Constants.PACKAGE_ENTITY_QUERY + ";");
       bufferedWriter.newLine();
       bufferedWriter.newLine();
 
