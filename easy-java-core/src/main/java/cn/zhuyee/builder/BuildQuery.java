@@ -117,29 +117,10 @@ public class BuildQuery {
 
       // 5.给属性生成getter|setter方法
       List<FieldInfo> fieldInfoList = tableInfo.getFieldList();
-      fieldInfoList.addAll(extendList);
-      for (FieldInfo field : fieldInfoList) {
-        // 将属性首字母大写
-        String tempField = StrUtils.upperCaseFirstLetter(field.getPropertyName());
-
-        // start ==> getter
-        bufferedWriter.write("\tpublic " + field.getJavaType() + " get" + tempField + "() {");
-        bufferedWriter.newLine();
-        bufferedWriter.write("\t\treturn this." + field.getPropertyName() + ";");
-        bufferedWriter.newLine();
-        bufferedWriter.write("\t}");
-        bufferedWriter.newLine();
-        // end ==> getter
-
-        // start ==> setter
-        bufferedWriter.write("\tpublic void set" + tempField + "(" + field.getJavaType() + " " + field.getPropertyName() + ") {");
-        bufferedWriter.newLine();
-        bufferedWriter.write("\t\tthis." + field.getPropertyName() + " = " + field.getPropertyName() + ";");
-        bufferedWriter.newLine();
-        bufferedWriter.write("\t}");
-        bufferedWriter.newLine();
-        // end ==> setter
-      }
+      // 表实体属性的getter和setter
+      buildGetSet(bufferedWriter, fieldInfoList);
+      // 扩增属性的getter和setter
+      buildGetSet(bufferedWriter, extendList);
 
       bufferedWriter.write("}");
       // end ==> 生成类文件
@@ -150,5 +131,30 @@ public class BuildQuery {
     }
 
     logger.info("==>结束创建文件");
+  }
+
+  public static void buildGetSet(BufferedWriter bufferedWriter, List<FieldInfo> fieldInfoList) throws Exception{
+    for (FieldInfo field : fieldInfoList) {
+      // 将属性首字母大写
+      String tempField = StrUtils.upperCaseFirstLetter(field.getPropertyName());
+
+      // start ==> getter
+      bufferedWriter.write("\tpublic " + field.getJavaType() + " get" + tempField + "() {");
+      bufferedWriter.newLine();
+      bufferedWriter.write("\t\treturn this." + field.getPropertyName() + ";");
+      bufferedWriter.newLine();
+      bufferedWriter.write("\t}");
+      bufferedWriter.newLine();
+      // end ==> getter
+
+      // start ==> setter
+      bufferedWriter.write("\tpublic void set" + tempField + "(" + field.getJavaType() + " " + field.getPropertyName() + ") {");
+      bufferedWriter.newLine();
+      bufferedWriter.write("\t\tthis." + field.getPropertyName() + " = " + field.getPropertyName() + ";");
+      bufferedWriter.newLine();
+      bufferedWriter.write("\t}");
+      bufferedWriter.newLine();
+      // end ==> setter
+    }
   }
 }

@@ -44,24 +44,62 @@ public class BuildMapperXml {
     try (
         OutputStream outputStream = new FileOutputStream(poFile);
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-        BufferedWriter br = new BufferedWriter(outputStreamWriter)
+        BufferedWriter bw = new BufferedWriter(outputStreamWriter)
     ) {
       // 开始创建文件
       // start ==> 生成类文件
       // xml 头
-      br.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
-      br.newLine();
-      br.write("<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Config 3.0//EN\"");
-      br.newLine();
-      br.write("\t\t\"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">");
-      br.newLine();
-      br.write("<mapper namespace=\"" + Constants.PACKAGE_MAPPERS + "." + className + "\">");
-      br.newLine();
-      br.write("</mapper>");
+      bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+      bw.newLine();
+      bw.write("<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Config 3.0//EN\"");
+      bw.newLine();
+      bw.write("\t\t\"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">");
+      bw.newLine();
+      bw.write("<mapper namespace=\"" + Constants.PACKAGE_MAPPERS + "." + className + "\">");
+      bw.newLine();
 
+      // 1.构建映射实体 ==> start
+      bw.newLine();
+      bw.write("\t<!-- 实体映射 -->");
+      bw.newLine();
+      String poClass = Constants.PACKAGE_ENTITY_PO + "." + tableInfo.getBeanName();
+      bw.write("\t<resultMap id=\"base_result_map\" type=\"" + poClass + "\">");
+
+      // 拿到主键字段
+      FieldInfo idField = null;
+      Map<String, List<FieldInfo>> keyIndexMap = tableInfo.getKeyIndexMap();
+      // 遍历拿到唯一索引
+      for (Map.Entry<String, List<FieldInfo>> entry : keyIndexMap.entrySet()) {
+        if ("PRIMARY".equals(entry.getKey())) {
+          List<FieldInfo> fieldInfoList = entry.getValue();
+          // 唯一索引
+          if (fieldInfoList.size() == 1) {
+            idField = fieldInfoList.get(0);
+            break;
+          }
+        }
+      }
+      // 实体属性
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        bw.write("\t\t<!-- " + fieldInfo.getComment() + " -->");
+        bw.newLine();
+        String key = "";
+        if (idField != null && fieldInfo.getPropertyName().equals(idField.getPropertyName())) {
+          key = "id";
+        } else {
+          key = "result";
+        }
+        bw.write("\t\t<" + key + " column=\"" + fieldInfo.getFieldName() + "\" property=\"" + fieldInfo.getPropertyName() + "\"/>");
+        bw.newLine();
+      }
+      bw.write("\t</resultMap>");
+      bw.newLine();
+      // 1.构建映射实体 ==> end
+
+      bw.write("</mapper>");
       // end ==> 生成类文件
 
-      br.flush();
+      bw.flush();
     } catch (Exception e) {
       logger.error("==> 创建Mapper XML失败！", e);
     }
