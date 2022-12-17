@@ -3,7 +3,7 @@ package cn.zhuyee.builder;
 import cn.zhuyee.bean.Constants;
 import cn.zhuyee.bean.FieldInfo;
 import cn.zhuyee.bean.TableInfo;
-import cn.zhuyee.utils.StrUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +21,13 @@ import java.util.Map;
 public class BuildMapperXml {
   // 定义一个日志对象
   private static final Logger logger = LoggerFactory.getLogger(BuildMapperXml.class);
+
+  /** 通用查询结果列-名称 */
+  private static final String BASE_COLUMN_LIST = "base_column_list";
+  /** 基础查询条件-名称 */
+  private static final String BASE_QUERY_CONDITION = "base_query_condition";
+  /** 通用查询条件-名称 */
+  private static final String QUERY_CONDITION = "query_condition";
 
   /**
    * 根据表信息生成对应的Mapper XML
@@ -57,9 +64,9 @@ public class BuildMapperXml {
       bw.newLine();
       bw.write("<mapper namespace=\"" + Constants.PACKAGE_MAPPERS + "." + className + "\">");
       bw.newLine();
+      bw.newLine();
 
       // 1.构建映射实体 ==> start
-      bw.newLine();
       bw.write("\t<!-- 实体映射 -->");
       bw.newLine();
       String poClass = Constants.PACKAGE_ENTITY_PO + "." + tableInfo.getBeanName();
@@ -94,7 +101,50 @@ public class BuildMapperXml {
       }
       bw.write("\t</resultMap>");
       bw.newLine();
+      bw.newLine();
       // 1.构建映射实体 ==> end
+
+      // 2.构建通用查询结果列 ==> start
+      bw.write("\t<!-- 通用查询结果列 -->");
+      bw.newLine();
+      bw.write("\t<sql id=\"" + BASE_COLUMN_LIST + "\">");
+      bw.newLine();
+      // SQL 内容
+      StringBuilder columnBuilder = new StringBuilder();
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        columnBuilder.append(fieldInfo.getFieldName()).append(", ");
+      }
+      String columnBuilderStr = columnBuilder.substring(0, columnBuilder.lastIndexOf(", "));
+      bw.write("\t\t" + columnBuilderStr);
+      bw.newLine();
+      bw.write("\t</sql>");
+      bw.newLine();
+      bw.newLine();
+      // 2.构建通用查询结果列 ==> end
+
+      // 3.构建基础查询条件 ==> start
+      bw.write("\t<!-- 基础查询条件 -->");
+      bw.newLine();
+      bw.write("\t<sql id=\"" + BASE_QUERY_CONDITION + "\">");
+      bw.newLine();
+      // 内容
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        String stringQuery = "";
+        if (ArrayUtils.contains(Constants.SQL_STRING_TYPES, fieldInfo.getSqlType())) {
+          // String 类型加上空字符串的判断
+          stringQuery = " and query." + fieldInfo.getPropertyName() + " != ''";
+        }
+        bw.write("\t\t<if test=\"query." + fieldInfo.getPropertyName() + " != null" + stringQuery +"\">");
+        bw.newLine();
+        bw.write("\t\t\t and " + fieldInfo.getFieldName() + " = #{query." + fieldInfo.getPropertyName() + "}");
+        bw.newLine();
+        bw.write("\t\t</if>");
+        bw.newLine();
+      }
+      bw.write("\t</sql>");
+      bw.newLine();
+      bw.newLine();
+      // 3.构建基础查询条件 ==> end
 
       bw.write("</mapper>");
       // end ==> 生成类文件
