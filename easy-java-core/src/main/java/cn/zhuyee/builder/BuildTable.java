@@ -178,6 +178,7 @@ public class BuildTable {
           fuzzyField.setJavaType(fieldInfo.getJavaType());
           fuzzyField.setPropertyName(propertyName + Constants.SUFFIX_BEAN_QUERY_FUZZY);
           fuzzyField.setFieldName(fieldInfo.getFieldName());
+          fuzzyField.setSqlType(type);
           fieldExtendList.add(fuzzyField);
         }
         // 日期 类型参数查询 开始|结束 扩展属性
@@ -186,12 +187,14 @@ public class BuildTable {
           timeStartField.setJavaType("String");
           timeStartField.setPropertyName(propertyName + Constants.SUFFIX_BEAN_QUERY_TIME_START);
           timeStartField.setFieldName(fieldInfo.getFieldName());
+          timeStartField.setSqlType(type);
           fieldExtendList.add(timeStartField);
 
           FieldInfo timeEndField = new FieldInfo();
           timeEndField.setJavaType("String");
           timeEndField.setPropertyName(propertyName + Constants.SUFFIX_BEAN_QUERY_TIME_END);
           timeEndField.setFieldName(fieldInfo.getFieldName());
+          timeEndField.setSqlType(type);
           fieldExtendList.add(timeEndField);
         }
         // end ==> 创建表实体时，就创建扩展属性
