@@ -71,7 +71,7 @@ public class BuildQuery {
       BuildComment.createClassComment(bufferedWriter, tableInfo.getComment() + "查询对象");
 
       // 3.类定义信息
-      bufferedWriter.write("public class " + className + " {");
+      bufferedWriter.write("public class " + className + " extends BaseQuery {");
       bufferedWriter.newLine();
       bufferedWriter.newLine();
 

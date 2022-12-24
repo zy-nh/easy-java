@@ -197,6 +197,36 @@ public class BuildMapperXml {
       bw.newLine();
       // 5.构建通用的查询条件 ==> end
 
+      // 6.构建列表查询 ==> start
+      bw.write("\t<!-- 列表集合查询 -->");
+      bw.newLine();
+      bw.write("\t<select id=\"selectList\" resultMap=\"base_result_map\">");
+      bw.newLine();
+      // 内容
+      bw.write("\t\tSELECT <include refid=\"" + BASE_COLUMN_LIST + "\"/> FROM " + tableInfo.getTableName() + " <include refid=\"" + QUERY_CONDITION + "\"/>");
+      bw.newLine();
+      bw.write("\t\t<if test=\"query.orderBy != null\">\n\t\t\torder by #{query.orderBy}\n\t\t</if>");
+      bw.newLine();
+      bw.write("\t\t<if test=\"query.simplePage != null\">\n\t\t\tlimit #{query.simplePage.start}, #{query.simplePage.end}\n\t\t</if>");
+      bw.newLine();
+      bw.write("\t</select>");
+      bw.newLine();
+      bw.newLine();
+      // 6.构建列表查询 ==> end
+
+      // 7.构建数量查询 ==> start
+      bw.write("\t<!-- 查询数量 -->");
+      bw.newLine();
+      bw.write("\t<select id=\"selectCount\" resultType=\"java.lang.Long\">");
+      bw.newLine();
+      // 内容
+      bw.write("\t\tSELECT count(1) FROM " + tableInfo.getTableName() + " <include refid=\"" + QUERY_CONDITION + "\"/>");
+      bw.newLine();
+      bw.write("\t</select>");
+      bw.newLine();
+      bw.newLine();
+      // 7.构建数量查询 ==> end
+
       bw.write("</mapper>");
       // end ==> 生成类文件
 
