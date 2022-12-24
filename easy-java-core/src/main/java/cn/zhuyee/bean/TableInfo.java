@@ -28,9 +28,13 @@ public class TableInfo {
    */
   private String comment;
   /**
-   * 字段名称
+   * 字段信息
    */
   private List<FieldInfo> fieldList;
+  /**
+   * 扩展字段信息
+   */
+  private List<FieldInfo> fieldExtendList;
   /**
    * 唯一索引集合
    */
@@ -118,5 +122,13 @@ public class TableInfo {
 
   public void setHaveBigDecimal(Boolean haveBigDecimal) {
     this.haveBigDecimal = haveBigDecimal;
+  }
+
+  public List<FieldInfo> getFieldExtendList() {
+    return fieldExtendList;
+  }
+
+  public void setFieldExtendList(List<FieldInfo> fieldExtendList) {
+    this.fieldExtendList = fieldExtendList;
   }
 }

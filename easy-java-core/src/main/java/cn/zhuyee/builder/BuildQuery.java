@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 import static cn.zhuyee.builder.BuildComment.createFieldComment;
@@ -77,7 +76,6 @@ public class BuildQuery {
       bufferedWriter.newLine();
 
       // 4.拿到所有的属性
-      List<FieldInfo> extendList = new ArrayList();
       for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
         createFieldComment(bufferedWriter, fieldInfo.getComment());
         bufferedWriter.write("\tprivate " + fieldInfo.getJavaType() + " " + fieldInfo.getPropertyName() + ";");
@@ -88,39 +86,24 @@ public class BuildQuery {
         if (ArrayUtils.contains(Constants.SQL_STRING_TYPES, fieldInfo.getSqlType())) {
           bufferedWriter.write("\tprivate " + fieldInfo.getJavaType() + " " + fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_FUZZY + ";");
           bufferedWriter.newLine();
-
-          FieldInfo fuzzyField = new FieldInfo();
-          fuzzyField.setJavaType(fieldInfo.getJavaType());
-          fuzzyField.setPropertyName(fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_FUZZY);
-          extendList.add(fuzzyField);
         }
 
         // 日期 类型参数查询 开始|结束 属性
         if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, fieldInfo.getSqlType()) || ArrayUtils.contains(Constants.SQL_DATE_TYPES, fieldInfo.getSqlType())) {
           bufferedWriter.write("\tprivate String " + fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_TIME_START + ";");
           bufferedWriter.newLine();
-
-          FieldInfo timeStartField = new FieldInfo();
-          timeStartField.setJavaType("String");
-          timeStartField.setPropertyName(fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_TIME_START);
-          extendList.add(timeStartField);
+          bufferedWriter.newLine();
 
           bufferedWriter.write("\tprivate String " + fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_TIME_END + ";");
           bufferedWriter.newLine();
-
-          FieldInfo timeEndField = new FieldInfo();
-          timeEndField.setJavaType("String");
-          timeEndField.setPropertyName(fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_TIME_END);
-          extendList.add(timeEndField);
         }
       }
 
       // 5.给属性生成getter|setter方法
-      List<FieldInfo> fieldInfoList = tableInfo.getFieldList();
       // 表实体属性的getter和setter
-      buildGetSet(bufferedWriter, fieldInfoList);
+      buildGetSet(bufferedWriter, tableInfo.getFieldList());
       // 扩增属性的getter和setter
-      buildGetSet(bufferedWriter, extendList);
+      buildGetSet(bufferedWriter, tableInfo.getFieldExtendList());
 
       bufferedWriter.write("}");
       // end ==> 生成类文件
@@ -154,6 +137,7 @@ public class BuildQuery {
       bufferedWriter.newLine();
       bufferedWriter.write("\t}");
       bufferedWriter.newLine();
+      bufferedWriter.newLine();  // 一组getter|setter隔一行
       // end ==> setter
     }
   }

@@ -122,6 +122,8 @@ public class BuildTable {
 
     // 返回的字段集合
     List<FieldInfo> fieldInfoList = new ArrayList();
+    // 扩展字段集合
+    List<FieldInfo> fieldExtendList = new ArrayList();
     try {
       // 通过连接来调用执行器执行SQL，并返回结果
       ps = conn.prepareStatement(String.format(SQL_SHOW_TABLE_FIELDS, tableInfo.getTableName()));
@@ -168,6 +170,31 @@ public class BuildTable {
           haveBigDecimal = true;
         }
         fieldInfoList.add(fieldInfo);
+
+        // start ==> 创建表实体时，就创建扩展属性
+        // String 类型参数模糊查询扩展属性
+        if (ArrayUtils.contains(Constants.SQL_STRING_TYPES, type)) {
+          FieldInfo fuzzyField = new FieldInfo();
+          fuzzyField.setJavaType(fieldInfo.getJavaType());
+          fuzzyField.setPropertyName(propertyName + Constants.SUFFIX_BEAN_QUERY_FUZZY);
+          fuzzyField.setFieldName(fieldInfo.getFieldName());
+          fieldExtendList.add(fuzzyField);
+        }
+        // 日期 类型参数查询 开始|结束 扩展属性
+        if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, type) || ArrayUtils.contains(Constants.SQL_DATE_TYPES, type)) {
+          FieldInfo timeStartField = new FieldInfo();
+          timeStartField.setJavaType("String");
+          timeStartField.setPropertyName(propertyName + Constants.SUFFIX_BEAN_QUERY_TIME_START);
+          timeStartField.setFieldName(fieldInfo.getFieldName());
+          fieldExtendList.add(timeStartField);
+
+          FieldInfo timeEndField = new FieldInfo();
+          timeEndField.setJavaType("String");
+          timeEndField.setPropertyName(propertyName + Constants.SUFFIX_BEAN_QUERY_TIME_END);
+          timeEndField.setFieldName(fieldInfo.getFieldName());
+          fieldExtendList.add(timeEndField);
+        }
+        // end ==> 创建表实体时，就创建扩展属性
       }
       // 设置这几个布尔类型的值
       tableInfo.setHaveDateTime(haveDateTime);
@@ -176,6 +203,8 @@ public class BuildTable {
 
       // 将拿到的表字段信息塞进表对象中
       tableInfo.setFieldList(fieldInfoList);
+      // 塞入扩展属性
+      tableInfo.setFieldExtendList(fieldExtendList);
 
     } catch (Exception e) {
       logger.error("读取表字段失败",e);
