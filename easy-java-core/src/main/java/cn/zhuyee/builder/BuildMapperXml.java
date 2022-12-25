@@ -227,6 +227,64 @@ public class BuildMapperXml {
       bw.newLine();
       // 7.构建数量查询 ==> end
 
+      /***********************************
+       * 插入语句
+       ***********************************/
+      // 1.单条插入 ==> start
+      bw.write("\t<!-- 单条插入 -->");
+      bw.newLine();
+      bw.write("\t<insert id=\"insert\" parameterType=\"" + Constants.PACKAGE_ENTITY_PO + "." + tableInfo.getBeanName() + "\">");
+      bw.newLine();
+      // 拿到自增长的字段
+      FieldInfo autoIncrementField = null;
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        if (fieldInfo.getAutoIncrement() != null && fieldInfo.getAutoIncrement()) {
+          autoIncrementField = fieldInfo;
+          break;
+        }
+      }
+      // 自增字段语句
+      if (autoIncrementField != null) {
+        bw.write("\t\t<selectKey keyProperty=\"bean." + autoIncrementField.getFieldName() + "\" resultType=\"" + autoIncrementField.getJavaType() + "\" order=\"AFTER\">");
+        bw.newLine();
+        bw.write("\t\t\tSELECT LAST_INSERT_ID()");
+        bw.newLine();
+        bw.write("\t\t</selectKey>");
+        bw.newLine();
+      }
+      bw.write("\t\tINSERT INTO " + tableInfo.getTableName());
+      bw.newLine();
+      // 要插入的字段名
+      bw.write("\t\t<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
+      bw.newLine();
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        bw.write("\t\t\t<if test=\"bean." + fieldInfo.getPropertyName() + " != null\">");
+        bw.newLine();
+        bw.write("\t\t\t\t" + fieldInfo.getFieldName() + ",");
+        bw.newLine();
+        bw.write("\t\t\t</if>");
+        bw.newLine();
+      }
+      bw.write("\t\t</trim>");
+      bw.newLine();
+      // 要插入的值
+      bw.write("\t\t<trim prefix=\"values (\" suffix=\")\" suffixOverrides=\",\">");
+      bw.newLine();
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        bw.write("\t\t\t<if test=\"bean." + fieldInfo.getPropertyName() + " != null\">");
+        bw.newLine();
+        bw.write("\t\t\t\t#{bean." + fieldInfo.getPropertyName() + "},");
+        bw.newLine();
+        bw.write("\t\t\t</if>");
+        bw.newLine();
+      }
+      bw.write("\t\t</trim>");
+      bw.newLine();
+      bw.write("\t</insert>");
+      bw.newLine();
+      bw.newLine();
+      // 1.单条插入 ==> end
+
       bw.write("</mapper>");
       // end ==> 生成类文件
 
