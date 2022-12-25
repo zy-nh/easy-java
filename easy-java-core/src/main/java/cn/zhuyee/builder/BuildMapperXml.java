@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -284,6 +285,72 @@ public class BuildMapperXml {
       bw.newLine();
       bw.newLine();
       // 1.单条插入 ==> end
+
+      // 2.插入或更新 ==> start
+      bw.write("\t<!-- 插入或更新（匹配有值的字段） -->");
+      bw.newLine();
+      bw.write("\t<insert id=\"insertOrUpdate\" parameterType=\"" + Constants.PACKAGE_ENTITY_PO + "." + tableInfo.getBeanName() + "\">");
+      bw.newLine();
+      bw.write("\t\tINSERT INTO " + tableInfo.getTableName());
+      bw.newLine();
+      // 要插入的字段名
+      bw.write("\t\t<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
+      bw.newLine();
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        bw.write("\t\t\t<if test=\"bean." + fieldInfo.getPropertyName() + " != null\">");
+        bw.newLine();
+        bw.write("\t\t\t\t" + fieldInfo.getFieldName() + ",");
+        bw.newLine();
+        bw.write("\t\t\t</if>");
+        bw.newLine();
+      }
+      bw.write("\t\t</trim>");
+      bw.newLine();
+      // 要插入的值
+      bw.write("\t\t<trim prefix=\"values (\" suffix=\")\" suffixOverrides=\",\">");
+      bw.newLine();
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        bw.write("\t\t\t<if test=\"bean." + fieldInfo.getPropertyName() + " != null\">");
+        bw.newLine();
+        bw.write("\t\t\t\t#{bean." + fieldInfo.getPropertyName() + "},");
+        bw.newLine();
+        bw.write("\t\t\t</if>");
+        bw.newLine();
+      }
+      bw.write("\t\t</trim>");
+      bw.newLine();
+      // 更新操作
+      bw.write("\t\ton DUPLICATE key update");
+      bw.newLine();
+      // 把主键拿出来，不允许更新主键
+      Map<String, String> keyTempMap = new HashMap();
+      for (Map.Entry<String, List<FieldInfo>> entry : keyIndexMap.entrySet()) {
+        List<FieldInfo> fieldInfoList = entry.getValue();
+        for (FieldInfo item : fieldInfoList) {
+          keyTempMap.put(item.getFieldName(), item.getFieldName());
+        }
+      }
+      bw.write("\t\t<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
+      bw.newLine();
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        // 若有主键或唯一索引，则跳过不生成对应的更新字段
+        if (keyTempMap.get(fieldInfo.getFieldName()) != null) {
+          continue;
+        }
+        bw.write("\t\t\t<if test=\"bean." + fieldInfo.getPropertyName() + " != null\">");
+        bw.newLine();
+        bw.write("\t\t\t\t" + fieldInfo.getFieldName() +" = VALUES("+fieldInfo.getFieldName()+ "),");
+        bw.newLine();
+        bw.write("\t\t\t</if>");
+        bw.newLine();
+      }
+      bw.write("\t\t</trim>");
+      bw.newLine();
+
+      bw.write("\t</insert>");
+      bw.newLine();
+      bw.newLine();
+      // 2.插入或更新 ==> end
 
       bw.write("</mapper>");
       // end ==> 生成类文件
