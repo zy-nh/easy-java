@@ -357,13 +357,16 @@ public class BuildMapperXml {
       bw.newLine();
       bw.write("\t<insert id=\"insertBatch\" parameterType=\"" + poClass + "\">");
       bw.newLine();
+      // 拼接字段
       StringBuffer insertFieldBuffer = new StringBuffer();
+      StringBuffer insertPropertyBuffer = new StringBuffer();
       for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
         // 去除自增字段
         if (fieldInfo.getAutoIncrement()) {
           continue;
         }
         insertFieldBuffer.append(fieldInfo.getFieldName()).append(",");
+        insertPropertyBuffer.append("#{item." + fieldInfo.getPropertyName() + "}").append(",");
       }
       // 处理最后一个逗号
       String insertFields = insertFieldBuffer.substring(0, insertFieldBuffer.lastIndexOf(","));
@@ -371,13 +374,6 @@ public class BuildMapperXml {
       bw.newLine();
       bw.write("\t\t<foreach collection=\"list\" item=\"item\" separator=\",\" open=\"(\" close=\")\">");
       bw.newLine();
-      StringBuffer insertPropertyBuffer = new StringBuffer();
-      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
-        if (fieldInfo.getAutoIncrement()) {
-          continue;
-        }
-        insertPropertyBuffer.append("#{item." + fieldInfo.getPropertyName() + "}").append(",");
-      }
       String insertProperty = insertPropertyBuffer.substring(0, insertPropertyBuffer.lastIndexOf(","));
       bw.write("\t\t\t" + insertProperty);
       bw.newLine();
@@ -387,6 +383,36 @@ public class BuildMapperXml {
       bw.newLine();
       bw.newLine();
       // 3.批量插入 ==> end
+
+      // 4.批量插入或更新 ==> start
+      bw.write("\t<!-- 批量插入或更新 -->");
+      bw.newLine();
+      bw.write("\t<insert id=\"insertOrUpdateBatch\" parameterType=\"" + poClass + "\">");
+      bw.newLine();
+      insertFields = insertFieldBuffer.substring(0, insertFieldBuffer.lastIndexOf(","));
+      bw.write("\t\tINSERT INTO " + tableInfo.getTableName() + "(" + insertFields + ") VALUES");
+      bw.newLine();
+      bw.write("\t\t<foreach collection=\"list\" item=\"item\" separator=\",\" open=\"(\" close=\")\">");
+      bw.newLine();
+      insertProperty = insertPropertyBuffer.substring(0, insertPropertyBuffer.lastIndexOf(","));
+      bw.write("\t\t\t" + insertProperty);
+      bw.newLine();
+      bw.write("\t\t</foreach>");
+      bw.newLine();
+      // 更新
+      bw.write("\t\ton DUPLICATE key update");
+      bw.newLine();
+      StringBuffer insertOrUpdateBatchBuffer = new StringBuffer();
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        insertOrUpdateBatchBuffer.append(fieldInfo.getFieldName() + " = VALUES(" + fieldInfo.getFieldName() + "),");
+      }
+      String insertOrUpdateBatch = insertOrUpdateBatchBuffer.substring(0, insertOrUpdateBatchBuffer.lastIndexOf(","));
+      bw.write("\t\t" + insertOrUpdateBatch);
+      bw.newLine();
+      bw.write("\t</insert>");
+      bw.newLine();
+      bw.newLine();
+      // 4.批量插入或更新 ==> end
 
       bw.write("</mapper>");
       // end ==> 生成类文件
