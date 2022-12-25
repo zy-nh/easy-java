@@ -234,7 +234,7 @@ public class BuildMapperXml {
       // 1.单条插入 ==> start
       bw.write("\t<!-- 单条插入 -->");
       bw.newLine();
-      bw.write("\t<insert id=\"insert\" parameterType=\"" + Constants.PACKAGE_ENTITY_PO + "." + tableInfo.getBeanName() + "\">");
+      bw.write("\t<insert id=\"insert\" parameterType=\"" + poClass + "\">");
       bw.newLine();
       // 拿到自增长的字段
       FieldInfo autoIncrementField = null;
@@ -289,7 +289,7 @@ public class BuildMapperXml {
       // 2.插入或更新 ==> start
       bw.write("\t<!-- 插入或更新（匹配有值的字段） -->");
       bw.newLine();
-      bw.write("\t<insert id=\"insertOrUpdate\" parameterType=\"" + Constants.PACKAGE_ENTITY_PO + "." + tableInfo.getBeanName() + "\">");
+      bw.write("\t<insert id=\"insertOrUpdate\" parameterType=\"" + poClass + "\">");
       bw.newLine();
       bw.write("\t\tINSERT INTO " + tableInfo.getTableName());
       bw.newLine();
@@ -351,6 +351,42 @@ public class BuildMapperXml {
       bw.newLine();
       bw.newLine();
       // 2.插入或更新 ==> end
+
+      // 3.批量插入 ==> start
+      bw.write("\t<!-- 批量插入 -->");
+      bw.newLine();
+      bw.write("\t<insert id=\"insertBatch\" parameterType=\"" + poClass + "\">");
+      bw.newLine();
+      StringBuffer insertFieldBuffer = new StringBuffer();
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        // 去除自增字段
+        if (fieldInfo.getAutoIncrement()) {
+          continue;
+        }
+        insertFieldBuffer.append(fieldInfo.getFieldName()).append(",");
+      }
+      // 处理最后一个逗号
+      String insertFields = insertFieldBuffer.substring(0, insertFieldBuffer.lastIndexOf(","));
+      bw.write("\t\tINSERT INTO " + tableInfo.getTableName() + "(" + insertFields + ") VALUES");
+      bw.newLine();
+      bw.write("\t\t<foreach collection=\"list\" item=\"item\" separator=\",\" open=\"(\" close=\")\">");
+      bw.newLine();
+      StringBuffer insertPropertyBuffer = new StringBuffer();
+      for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+        if (fieldInfo.getAutoIncrement()) {
+          continue;
+        }
+        insertPropertyBuffer.append("#{item." + fieldInfo.getPropertyName() + "}").append(",");
+      }
+      String insertProperty = insertPropertyBuffer.substring(0, insertPropertyBuffer.lastIndexOf(","));
+      bw.write("\t\t\t" + insertProperty);
+      bw.newLine();
+      bw.write("\t\t</foreach>");
+      bw.newLine();
+      bw.write("\t</insert>");
+      bw.newLine();
+      bw.newLine();
+      // 3.批量插入 ==> end
 
       bw.write("</mapper>");
       // end ==> 生成类文件
