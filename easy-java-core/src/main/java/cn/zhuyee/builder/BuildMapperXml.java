@@ -3,6 +3,7 @@ package cn.zhuyee.builder;
 import cn.zhuyee.bean.Constants;
 import cn.zhuyee.bean.FieldInfo;
 import cn.zhuyee.bean.TableInfo;
+import cn.zhuyee.utils.StrUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -372,10 +373,10 @@ public class BuildMapperXml {
       String insertFields = insertFieldBuffer.substring(0, insertFieldBuffer.lastIndexOf(","));
       bw.write("\t\tINSERT INTO " + tableInfo.getTableName() + "(" + insertFields + ") VALUES");
       bw.newLine();
-      bw.write("\t\t<foreach collection=\"list\" item=\"item\" separator=\",\" open=\"(\" close=\")\">");
+      bw.write("\t\t<foreach collection=\"list\" item=\"item\" separator=\",\">");
       bw.newLine();
       String insertProperty = insertPropertyBuffer.substring(0, insertPropertyBuffer.lastIndexOf(","));
-      bw.write("\t\t\t" + insertProperty);
+      bw.write("\t\t\t(" + insertProperty + ")");
       bw.newLine();
       bw.write("\t\t</foreach>");
       bw.newLine();
@@ -392,10 +393,10 @@ public class BuildMapperXml {
       insertFields = insertFieldBuffer.substring(0, insertFieldBuffer.lastIndexOf(","));
       bw.write("\t\tINSERT INTO " + tableInfo.getTableName() + "(" + insertFields + ") VALUES");
       bw.newLine();
-      bw.write("\t\t<foreach collection=\"list\" item=\"item\" separator=\",\" open=\"(\" close=\")\">");
+      bw.write("\t\t<foreach collection=\"list\" item=\"item\" separator=\",\">");
       bw.newLine();
       insertProperty = insertPropertyBuffer.substring(0, insertPropertyBuffer.lastIndexOf(","));
-      bw.write("\t\t\t" + insertProperty);
+      bw.write("\t\t\t(" + insertProperty + ")");
       bw.newLine();
       bw.write("\t\t</foreach>");
       bw.newLine();
@@ -413,6 +414,72 @@ public class BuildMapperXml {
       bw.newLine();
       bw.newLine();
       // 4.批量插入或更新 ==> end
+
+      // 5.根据ID更新 ==> start
+      for (Map.Entry<String, List<FieldInfo>> entry : keyIndexMap.entrySet()) {
+        List<FieldInfo> keyFieldInfoList = entry.getValue();
+        // 方法名称
+        StringBuilder methodName = new StringBuilder();
+        StringBuffer paramNames = new StringBuffer();
+        Integer index = 0;
+        for (FieldInfo fieldInfo : keyFieldInfoList) {
+          index++;
+          // 组装方法名称
+          methodName.append(StrUtils.upperCaseFirstLetter(fieldInfo.getPropertyName()));
+          paramNames.append(fieldInfo.getFieldName() + "=#{" + fieldInfo.getPropertyName() + "}");
+          if (index < keyFieldInfoList.size()) {
+            methodName.append("And");
+            paramNames.append(" and ");
+          }
+        }
+        // ==> 查询操作
+        bw.write("\t<!-- 根据 " + methodName + " 查询 -->");
+        bw.newLine();
+        bw.write("\t<select id=\"selectBy" + methodName + "\" resultMap=\"base_result_map\">");
+        bw.newLine();
+        bw.write("\t\tSELECT <include refid=\"" + BASE_COLUMN_LIST + "\"/> FROM " + tableInfo.getTableName() + " WHERE " + paramNames);
+        bw.newLine();
+        bw.write("\t</select>");
+        bw.newLine();
+        bw.newLine();
+
+        // ==> 更新操作
+        bw.write("\t<!-- 根据 " + methodName + " 更新 -->");
+        bw.newLine();
+        bw.write("\t<update id=\"updateBy" + methodName + "\" parameterType=\"" + poClass + "\">");
+        bw.newLine();
+        bw.write("\t\tUPDATE " + tableInfo.getTableName());
+        bw.newLine();
+        bw.write("\t\t<set>");
+        bw.newLine();
+        for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+          bw.write("\t\t\t<if test=\"bean." + fieldInfo.getPropertyName() + " != null\">");
+          bw.newLine();
+          bw.write("\t\t\t\t" + fieldInfo.getFieldName() + " = #{bean." + fieldInfo.getPropertyName() + "},");
+          bw.newLine();
+          bw.write("\t\t\t</if>");
+          bw.newLine();
+        }
+        bw.write("\t\t</set>");
+        bw.newLine();
+        bw.write("\t\tWHERE " + paramNames);
+        bw.newLine();
+        bw.write("\t</update>");
+        bw.newLine();
+        bw.newLine();
+
+        // ==> 删除操作
+        bw.write("\t<!-- 根据 " + methodName + " 删除 -->");
+        bw.newLine();
+        bw.write("\t<delete id=\"deleteBy" + methodName + "\">");
+        bw.newLine();
+        bw.write("\t\tDELETE FROM " + tableInfo.getTableName() + " WHERE " + paramNames);
+        bw.newLine();
+        bw.write("\t</delete>");
+        bw.newLine();
+        bw.newLine();
+      }
+      // 5.根据ID更新 ==> end
 
       bw.write("</mapper>");
       // end ==> 生成类文件
