@@ -1,12 +1,16 @@
 package cn.zhuyee.builder;
 
 import cn.zhuyee.bean.Constants;
+import cn.zhuyee.bean.FieldInfo;
 import cn.zhuyee.bean.TableInfo;
+import cn.zhuyee.utils.StrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <h2>构建业务层代码</h2>
@@ -90,6 +94,62 @@ public class BuildService {
       bw.write("\tPaginationResultVO<" + tableInfo.getBeanName() + "> findListByPage(" + tableInfo.getBeanParamName() + " query);");
       bw.newLine();
       bw.newLine();
+
+      BuildComment.createFieldComment(bw, "新增");
+      bw.write("\tLong add(" + tableInfo.getBeanName() + " bean);");
+      bw.newLine();
+      bw.newLine();
+
+      BuildComment.createFieldComment(bw, "批量新增");
+      bw.write("\tLong addBatch(List<" + tableInfo.getBeanName() + "> listBean);");
+      bw.newLine();
+      bw.newLine();
+
+      BuildComment.createFieldComment(bw, "批量新增或修改");
+      bw.write("\tLong addOrUpdateBatch(List<" + tableInfo.getBeanName() + "> listBean);");
+      bw.newLine();
+      bw.newLine();
+
+      for (Map.Entry<String, List<FieldInfo>> entry : tableInfo.getKeyIndexMap().entrySet()) {
+        List<FieldInfo> keyFieldInfoList = entry.getValue();
+
+        // 方法名称
+        StringBuilder methodName = new StringBuilder();
+        // 方法参数
+        StringBuilder methodParams = new StringBuilder();
+
+        Integer index = 0;
+        for (FieldInfo fieldInfo : keyFieldInfoList) {
+          index++;
+          // 组装方法名称
+          methodName.append(StrUtils.upperCaseFirstLetter(fieldInfo.getPropertyName()));
+          if (index < keyFieldInfoList.size()) {
+            methodName.append("And");
+          }
+          // 组装方法参数：参数大于2的，用逗号隔开（下面代码可优化）
+          methodParams.append(fieldInfo.getJavaType() + " " + fieldInfo.getPropertyName());
+          if (index < keyFieldInfoList.size()) {
+            methodParams.append(", ");
+          }
+        }
+        // ==> 查询操作
+        BuildComment.createFieldComment(bw, "根据" + methodName + "查询");
+        bw.write("\t" + tableInfo.getBeanName() + " getBy" + methodName + "(" + methodParams + ");");
+        bw.newLine();
+        bw.newLine();
+
+        // ==> 更新操作
+        BuildComment.createFieldComment(bw, "根据" + methodName + "更新");
+        bw.write("\tLong updateBy" + methodName + "(" + tableInfo.getBeanName() + " bean, " + methodParams + ");");
+        bw.newLine();
+        bw.newLine();
+
+        // ==> 删除操作
+        BuildComment.createFieldComment(bw, "根据" + methodName + "删除");
+        bw.write("\tLong deleteBy" + methodName + "(" + tableInfo.getBeanName() + " bean, " + methodParams + ");");
+        bw.newLine();
+        bw.newLine();
+      }
 
       bw.write("}");
       // end ==> 生成类文件

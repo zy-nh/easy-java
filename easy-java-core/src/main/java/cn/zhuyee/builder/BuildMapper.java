@@ -97,13 +97,13 @@ public class BuildMapper {
 
         // ==> 更新操作
         BuildComment.createFieldComment(bufferedWriter, "根据" + methodName + "更新");
-        bufferedWriter.write("\tInteger updateBy" + methodName + "(@Param(\"bean\") T t, " + methodParams + ");");
+        bufferedWriter.write("\tLong updateBy" + methodName + "(@Param(\"bean\") T t, " + methodParams + ");");
         bufferedWriter.newLine();
         bufferedWriter.newLine();
 
         // ==> 删除操作
         BuildComment.createFieldComment(bufferedWriter, "根据" + methodName + "删除");
-        bufferedWriter.write("\tInteger deleteBy" + methodName + "(@Param(\"bean\") T t, " + methodParams + ");");
+        bufferedWriter.write("\tLong deleteBy" + methodName + "(@Param(\"bean\") T t, " + methodParams + ");");
         bufferedWriter.newLine();
         bufferedWriter.newLine();
       }
