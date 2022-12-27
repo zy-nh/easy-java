@@ -48,6 +48,11 @@ public class BuildBase {
     headerInfoList.clear();
     headerInfoList.add("package " + Constants.PACKAGE_ENTITY_QUERY);
     build(headerInfoList, "PageSize", Constants.QUERY_ABSOLUTE_PATH);
+
+    // 生成分页工具类: PaginationResultVO
+    headerInfoList.clear();
+    headerInfoList.add("package " + Constants.PACKAGE_ENTITY_VO);
+    build(headerInfoList, "PaginationResultVO", Constants.VO_ABSOLUTE_PATH);
   }
 
   private static void build(List<String> headerInfoList, String fileName, String outputPath) {

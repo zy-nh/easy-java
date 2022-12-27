@@ -70,6 +70,11 @@ public class Constants {
   /** 查询实体的包路径 */
   public static String QUERY_ABSOLUTE_PATH;
 
+  /** VO实体的包名 */
+  public static String PACKAGE_ENTITY_VO;
+  /** VO实体的包路径 */
+  public static String VO_ABSOLUTE_PATH;
+
   /** 工具类包 */
   public static String PACKAGE_UTILS;
   /** 工具类包路径 */
@@ -86,6 +91,15 @@ public class Constants {
   public static String PACKAGE_MAPPERS_PATH;
   /** mapper-xml资源包路径 */
   public static String PATH_MAPPERS_XMLS;
+
+  /** service */
+  public static String PACKAGE_SERVICE;
+  /** service 包路径 */
+  public static String PACKAGE_SERVICE_PATH;
+  /** service 实现类 */
+  public static String PACKAGE_SERVICE_IMPL;
+  /** service 实现类的包路径 */
+  public static String PACKAGE_SERVICE_IMPL_PATH;
 
   static{
     AUTHOR_COMMENT = PropertiesUtils.getString("author.comment");
@@ -132,6 +146,10 @@ public class Constants {
     PACKAGE_ENTITY_QUERY = PACKAGE_BASE + "." + PropertiesUtils.getString("package.entity.query");
     QUERY_ABSOLUTE_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_ENTITY_QUERY.replace(".", "/");
 
+    // ==> VO
+    PACKAGE_ENTITY_VO = PACKAGE_BASE + "." + PropertiesUtils.getString("package.entity.vo");
+    VO_ABSOLUTE_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_ENTITY_VO.replace(".", "/");
+
     // ==> UTILS
     PACKAGE_UTILS = PACKAGE_BASE + "." + PropertiesUtils.getString("package.utils");
     PACKAGE_UTILS_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_UTILS.replace(".", "/");
@@ -144,6 +162,13 @@ public class Constants {
     PACKAGE_MAPPERS = PACKAGE_BASE + "." + PropertiesUtils.getString("package.mappers");
     PACKAGE_MAPPERS_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_MAPPERS.replace(".", "/");
     PATH_MAPPERS_XMLS = PATH_ABSOLUTE_RESOURCES + "/" + PACKAGE_MAPPERS.replace(".", "/");
+
+    // ==> SERVICE
+    PACKAGE_SERVICE = PACKAGE_BASE + "." + PropertiesUtils.getString("package.service");
+    PACKAGE_SERVICE_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_SERVICE.replace(".", "/");
+    // ==> SERVICE IMPL
+    PACKAGE_SERVICE_IMPL = PACKAGE_BASE + "." + PropertiesUtils.getString("package.service.impl");
+    PACKAGE_SERVICE_IMPL_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_SERVICE_IMPL.replace(".", "/");
   }
 
   // start ==> MySQL数据库关键字归类
