@@ -47,7 +47,7 @@ public class BuildBase {
     // 生成BaseQuery类
     headerInfoList.clear();
     headerInfoList.add("package " + Constants.PACKAGE_ENTITY_QUERY);
-    build(headerInfoList, "PageSize", Constants.QUERY_ABSOLUTE_PATH);
+    build(headerInfoList, "BaseQuery", Constants.QUERY_ABSOLUTE_PATH);
 
     // 生成分页工具类: PaginationResultVO
     headerInfoList.clear();
