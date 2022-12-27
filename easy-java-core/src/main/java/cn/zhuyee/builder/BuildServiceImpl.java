@@ -238,7 +238,7 @@ public class BuildServiceImpl {
       // end ==> 生成类文件
       bw.flush();
     } catch (Exception e) {
-      logger.error("==> 创建Service失败！", e);
+      logger.error("==> 创建ServiceImpl失败！", e);
     }
 
     logger.info("==>结束创建文件");
