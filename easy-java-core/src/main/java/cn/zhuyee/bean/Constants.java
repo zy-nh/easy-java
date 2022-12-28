@@ -101,6 +101,16 @@ public class Constants {
   /** service 实现类的包路径 */
   public static String PACKAGE_SERVICE_IMPL_PATH;
 
+  /** exception异常包 */
+  public static String PACKAGE_EXCEPTION;
+  /** exception 异常包路径 */
+  public static String PACKAGE_EXCEPTION_PATH;
+
+  /** controller层包 */
+  public static String PACKAGE_CONTROLLER;
+  /** controller层包路径 */
+  public static String PACKAGE_CONTROLLER_PATH;
+
   static{
     AUTHOR_COMMENT = PropertiesUtils.getString("author.comment");
 
@@ -169,6 +179,14 @@ public class Constants {
     // ==> SERVICE IMPL
     PACKAGE_SERVICE_IMPL = PACKAGE_BASE + "." + PropertiesUtils.getString("package.service.impl");
     PACKAGE_SERVICE_IMPL_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_SERVICE_IMPL.replace(".", "/");
+
+    // ==> EXCEPTION
+    PACKAGE_EXCEPTION = PACKAGE_BASE + "." + PropertiesUtils.getString("package.exception");
+    PACKAGE_EXCEPTION_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_EXCEPTION.replace(".", "/");
+
+    // ==> Controller
+    PACKAGE_CONTROLLER = PACKAGE_BASE + "." + PropertiesUtils.getString("package.controller");
+    PACKAGE_CONTROLLER_PATH = PATH_ABSOLUTE_JAVA + "/" + PACKAGE_CONTROLLER.replace(".", "/");
   }
 
   // start ==> MySQL数据库关键字归类

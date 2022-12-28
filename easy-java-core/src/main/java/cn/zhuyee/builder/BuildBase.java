@@ -53,6 +53,37 @@ public class BuildBase {
     headerInfoList.clear();
     headerInfoList.add("package " + Constants.PACKAGE_ENTITY_VO);
     build(headerInfoList, "PaginationResultVO", Constants.VO_ABSOLUTE_PATH);
+
+    // 生成响应实体类: ResponseVO
+    headerInfoList.clear();
+    headerInfoList.add("package " + Constants.PACKAGE_ENTITY_VO);
+    build(headerInfoList, "ResponseVO", Constants.VO_ABSOLUTE_PATH);
+
+    // 生成枚举类: ResponseCodeEnum
+    headerInfoList.clear();
+    headerInfoList.add("package " + Constants.PACKAGE_ENUMS);
+    build(headerInfoList, "ResponseCodeEnum", Constants.PACKAGE_ENUMS);
+
+    // 生成异常类: BusinessException
+    headerInfoList.clear();
+    headerInfoList.add("package " + Constants.PACKAGE_EXCEPTION);
+    headerInfoList.add("import " + Constants.PACKAGE_ENUMS + ".ResponseCodeEnum;");
+    build(headerInfoList, "BusinessException", Constants.PACKAGE_EXCEPTION_PATH);
+
+    // 生成基础控制类: ABaseController
+    headerInfoList.clear();
+    headerInfoList.add("package " + Constants.PACKAGE_CONTROLLER);
+    headerInfoList.add("import " + Constants.PACKAGE_ENTITY_VO + ".ResponseVO;");
+    headerInfoList.add("import " + Constants.PACKAGE_ENUMS + ".ResponseCodeEnum;");
+    build(headerInfoList, "ABaseController", Constants.PACKAGE_CONTROLLER_PATH);
+
+    // 生成全局异常控制类: AGlobalExceptionHandlerController
+    headerInfoList.clear();
+    headerInfoList.add("package " + Constants.PACKAGE_CONTROLLER);
+    headerInfoList.add("import " + Constants.PACKAGE_ENTITY_VO + ".ResponseVO;");
+    headerInfoList.add("import " + Constants.PACKAGE_ENUMS + ".ResponseCodeEnum;");
+    headerInfoList.add("import " + Constants.PACKAGE_EXCEPTION + ".BusinessException;");
+    build(headerInfoList, "AGlobalExceptionHandlerController", Constants.PACKAGE_CONTROLLER_PATH);
   }
 
   private static void build(List<String> headerInfoList, String fileName, String outputPath) {
