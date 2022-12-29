@@ -130,9 +130,9 @@ public class BuildTable {
       fieldResult = ps.executeQuery();
 
       // tableInfo中那几个Boolean类型的值默认为FALSE
-      Boolean haveDateTime = false;
-      Boolean haveDate = false;
-      Boolean haveBigDecimal = false;
+      boolean haveDateTime = false;
+      boolean haveDate = false;
+      boolean haveBigDecimal = false;
 
       while (fieldResult.next()) {
         String field = fieldResult.getString("field");
@@ -262,11 +262,6 @@ public class BuildTable {
           keyFieldList = new ArrayList();
           tableInfo.getKeyIndexMap().put(keyName,keyFieldList);
         }
-        /*for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
-          if (fieldInfo.getFieldName().equals(columnName)) {
-            keyFieldList.add(fieldInfo);
-          }
-        }*/
         // [优化] 这样来取到索引字段后，通过缓存Map来取到对应的字段对象进行add到list中，减少循环
         keyFieldList.add(tempMap.get(columnName));
       }
@@ -299,7 +294,7 @@ public class BuildTable {
    * @return 处理好的字段
    */
   private static String camelField(String field, Boolean upperCamelFirstLetter) {
-    StringBuffer stringBuffer = new StringBuffer();
+    StringBuilder stringBuffer = new StringBuilder();
     String[] fields = field.split("_");
     // 首字母大写处理
     stringBuffer.append(upperCamelFirstLetter ? StrUtils.upperCaseFirstLetter(fields[0]) : fields[0]);

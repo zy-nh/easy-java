@@ -105,7 +105,7 @@ public class BuildService {
         // 方法参数
         StringBuilder methodParams = new StringBuilder();
 
-        Integer index = 0;
+        int index = 0;
         for (FieldInfo fieldInfo : keyFieldInfoList) {
           index++;
           // 组装方法名称

@@ -152,7 +152,7 @@ public class BuildPO {
       }
 
       // 6.重写toString方法
-      StringBuffer toString = new StringBuffer();
+      StringBuilder toString = new StringBuilder();
       int index = 0;
       for (FieldInfo field : tableInfo.getFieldList()) {
         if (index == 0) {

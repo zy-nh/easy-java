@@ -359,8 +359,8 @@ public class BuildMapperXml {
       bw.write("\t<insert id=\"insertBatch\" parameterType=\"" + poClass + "\">");
       bw.newLine();
       // 拼接字段
-      StringBuffer insertFieldBuffer = new StringBuffer();
-      StringBuffer insertPropertyBuffer = new StringBuffer();
+      StringBuilder insertFieldBuffer = new StringBuilder();
+      StringBuilder insertPropertyBuffer = new StringBuilder();
       for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
         // 去除自增字段
         if (fieldInfo.getAutoIncrement()) {
@@ -403,7 +403,7 @@ public class BuildMapperXml {
       // 更新
       bw.write("\t\ton DUPLICATE key update");
       bw.newLine();
-      StringBuffer insertOrUpdateBatchBuffer = new StringBuffer();
+      StringBuilder insertOrUpdateBatchBuffer = new StringBuilder();
       for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
         insertOrUpdateBatchBuffer.append(fieldInfo.getFieldName() + " = VALUES(" + fieldInfo.getFieldName() + "),");
       }
@@ -420,8 +420,8 @@ public class BuildMapperXml {
         List<FieldInfo> keyFieldInfoList = entry.getValue();
         // 方法名称
         StringBuilder methodName = new StringBuilder();
-        StringBuffer paramNames = new StringBuffer();
-        Integer index = 0;
+        StringBuilder paramNames = new StringBuilder();
+        int index = 0;
         for (FieldInfo fieldInfo : keyFieldInfoList) {
           index++;
           // 组装方法名称

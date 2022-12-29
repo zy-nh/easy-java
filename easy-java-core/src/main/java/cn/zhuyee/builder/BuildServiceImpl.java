@@ -175,7 +175,7 @@ public class BuildServiceImpl {
         // 方法参数（不带类型）
         StringBuilder params = new StringBuilder();
 
-        Integer index = 0;
+        int index = 0;
         for (FieldInfo fieldInfo : keyFieldInfoList) {
           index++;
           // 组装方法名称

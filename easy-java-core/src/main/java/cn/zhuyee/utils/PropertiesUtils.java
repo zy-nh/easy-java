@@ -16,9 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PropertiesUtils {
   // 定义一个静态属性类
-  private static Properties props = new Properties();
+  private static final Properties props = new Properties();
   // 把所有属性放到map中
-  private static Map<String, String> PROPERTY_MAP = new ConcurrentHashMap();
+  private static final Map<String, String> PROPERTY_MAP = new ConcurrentHashMap();
 
   // 项目启动初始化时去读取配置
   static {
