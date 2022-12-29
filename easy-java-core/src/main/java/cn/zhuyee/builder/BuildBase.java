@@ -63,7 +63,7 @@ public class BuildBase {
     // 生成枚举类: ResponseCodeEnum
     headerInfoList.clear();
     headerInfoList.add("package " + Constants.PACKAGE_ENUMS);
-    build(headerInfoList, "ResponseCodeEnum", Constants.PACKAGE_ENUMS);
+    build(headerInfoList, "ResponseCodeEnum", Constants.PACKAGE_ENUMS_PATH);
 
     // 生成异常类: BusinessException
     headerInfoList.clear();
