@@ -24,6 +24,7 @@ public class BuildBase {
     headerInfoList.add("package " + Constants.PACKAGE_ENUMS);
     build(headerInfoList, "DateTimePatternEnum", Constants.PACKAGE_ENUMS_PATH);
     headerInfoList.clear();
+
     // 生成时间工具类
     headerInfoList.add("package " + Constants.PACKAGE_UTILS);
     build(headerInfoList,"DateUtils", Constants.PACKAGE_UTILS_PATH);
@@ -94,26 +95,19 @@ public class BuildBase {
     }
     // 输出的文件位置
     File javaFile = new File(outputPath + "/" + fileName + ".java");
-    // 文件输出流读取文件到流
-    OutputStream os = null;
-    OutputStreamWriter osw = null;
-    BufferedWriter bw = null;
-    // 输入流从流中写入数据到文件
-    InputStream is = null;
-    InputStreamReader isr = null;
-    BufferedReader br = null;
-    try {
-      // 1.读取文件 DateUtils.txt
-      os = new FileOutputStream(javaFile);
-      osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-      bw = new BufferedWriter(osw);
+    // 模板路径
+    String templatePath = BuildBase.class.getClassLoader().getResource("template/" + fileName + ".txt").getPath();
 
-      // 模板路径
-      String templatePath = BuildBase.class.getClassLoader().getResource("template/" + fileName + ".txt").getPath();
-      is = new FileInputStream(templatePath);
-      isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-      br = new BufferedReader(isr);
-
+    try (
+        // 文件输出流读取文件到流，1.读取文件 DateUtils.txt
+        OutputStream os = new FileOutputStream(javaFile);
+        OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+        BufferedWriter bw = new BufferedWriter(osw);
+        // 输入流从流中写入数据到文件
+        InputStream is = new FileInputStream(templatePath);
+        InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+        BufferedReader br = new BufferedReader(isr);
+      ){
       // 导入类的包名
       for (String head : headerInfoList) {
         bw.write(head + ";");
@@ -136,50 +130,6 @@ public class BuildBase {
 
     } catch (Exception e) {
       logger.error("生成基础类：{} 失败：", fileName, e);
-    } finally {
-      if (br != null) {
-        try {
-          br.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-      if (isr != null) {
-        try {
-          isr.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-      if (is != null) {
-        try {
-          is.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-      if (bw != null) {
-        try {
-          bw.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-      if (osw != null) {
-        try {
-          osw.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-      if (os != null) {
-        try {
-          os.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
     }
-
   }
 }

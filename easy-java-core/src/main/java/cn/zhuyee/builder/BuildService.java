@@ -60,21 +60,8 @@ public class BuildService {
       bw.newLine();
       bw.write("import java.util.List;");
       bw.newLine();
-      // 有日期、时间类型就导包
-      if (tableInfo.getHaveDateTime() || tableInfo.getHaveDate()) {
-        bw.write("import java.util.Date;");
-        bw.newLine();
-        bw.write(Constants.BEAN_DATE_FORMAT_CLASS);
-        bw.newLine();
-        bw.write(Constants.BEAN_DATE_UNFORMAT_CLASS);
-        bw.newLine();
 
-        bw.write("import " + Constants.PACKAGE_UTILS + ".DateUtils;");
-        bw.newLine();
-        bw.write("import " + Constants.PACKAGE_ENUMS + ".DateTimePatternEnum;");
-        bw.newLine();
-      }
-
+      // 开始生成类
       BuildComment.createClassComment(bw, tableInfo.getComment() + "对应的业务操作");
       bw.write("public interface " + className + " {");
       bw.newLine();
